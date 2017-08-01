@@ -1,0 +1,32 @@
+{
+    "sections" : {
+        "blank_01" : {
+            "name": "Blank",
+            "file": "blank"
+        },
+        "intro_01" : {
+            "name": "Intro with background image",
+            "file": "intro_with_background_image"
+        },
+        "content_01" : {
+            "name": "Services",
+            "file": "services"
+        },
+        "dynamic_01" : {
+            "name": "Portfolio",
+            "file": "portfolio"
+        },
+        "dynamic_02" : {
+            "name": "Blog",
+            "file": "blog"
+        },
+        "content_02" : {
+            "name": "Team",
+            "file": "team"
+        },
+        "form_01" : {
+            "name": "Contact",
+            "file": "contact"
+        }
+    }
+}
