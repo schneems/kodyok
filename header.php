@@ -40,6 +40,14 @@ if(!$menu_exists){
     <script type="text/javascript">
         get_stylesheet_directory_uri = '<?php echo get_stylesheet_directory_uri();?>';
         get_site_url = '<?php echo get_site_url();?>';
+        $(document).ready(function(){
+            $('a').on('click',function(e){
+                if($(this).attr('href')[0]!='#' && $(this).attr('target')!='_blank'){
+                    e.preventDefault();
+                    window.open($(this).attr('href')+'?kodyok','_top');
+                }
+            });
+        });
     </script>
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/core.js"></script>
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/core.button.js"></script>
@@ -61,7 +69,21 @@ if(!$menu_exists){
     ?>
 </head>
 <body style="margin:0;padding:0;">
-    <nav class="navbar navbar-default" style="border:0;margin-bottom:0;background-image:none;border-radius:0;box-shadow:none;-webkit-box-shadow:none;background-color:#EEE;">
+    <?php
+    if(get_option('menu_style')){
+        $menu_style = json_decode(get_option('menu_style'));
+        $font = $menu_style->font;
+        $color = $menu_style->color;
+        $bgcolor = $menu_style->bgcolor;
+        $logo = $menu_style->logo;
+    } else {
+       $font = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+       $color = 'rgb(119, 119, 119)';
+       $bgcolor = 'rgb(238, 238, 238)';
+       $logo = get_stylesheet_directory_uri().'/assets/img/logo.png';
+    }
+    ?>
+    <nav class="navbar navbar-default" style="border:0;margin-bottom:0;background-image:none;border-radius:0;box-shadow:none;-webkit-box-shadow:none;background-color:<?php echo $bgcolor;?>;">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -70,7 +92,7 @@ if(!$menu_exists){
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#" style="padding:0;padding-left:15px;"><img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/logo.png" height="50"></a>
+                <a class="navbar-brand" href="#" style="padding:0;padding-left:15px;"><img src="<?php echo $logo;?>" height="50"></a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right" data-menu-id="<?php echo $menu_id;?>">
@@ -78,7 +100,7 @@ if(!$menu_exists){
                     $items = wp_get_nav_menu_items($menu_name);
                     foreach($items as $item){
                     ?>
-                    <li data-item-id="<?php echo $item->db_id;?>" data-position="<?php echo $item->menu_order;?>"><a href="<?php echo $item->url;?>" <?php if($item->target=='_blank'){ echo 'target="_blank"'; } ?>><?php echo $item->title;?></a></li>
+                    <li data-item-id="<?php echo $item->db_id;?>" data-position="<?php echo $item->menu_order;?>"><a href="<?php echo $item->url;?>" <?php if($item->target=='_blank'){ echo 'target="_blank"'; } ?> style='color:<?php echo $color;?>;font-family:<?php echo $font;?>;'><?php echo $item->title;?></a></li>
                     <?php
                     }
                     ?>

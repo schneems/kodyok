@@ -98,6 +98,7 @@ function remove_menu_link(item_id){
 	$('nav').children('.container').children('.collapse').children('.nav').children('li').eq(item_id).children('a').removeAttr('target');
 }
 function get_menu_settings(){
+	active_element = $('nav');
 	$('#iframe',window.parent.document).css('width',$('#all_content',window.parent.document).width()-380);
 	$('#settings_menu',window.parent.document).show();
 	$('#settings_menu > div',window.parent.document).hide();

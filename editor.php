@@ -35,10 +35,15 @@ $upload_dir = wp_upload_dir();
 		});
 		$("#save").click(function(){
 			$('#design_area')[0].contentWindow.run_before_save();
+			menu_style = {};
+			menu_style["font"] = $("#design_area").contents().find('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('font-family');
+			menu_style["color"] = $("#design_area").contents().find('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('color');
+			menu_style["bgcolor"] = $("#design_area").contents().find('nav').css('background-color');
+			menu_style["logo"] = $("#design_area").contents().find('nav').children('.container').children('.navbar-header').children('.navbar-brand').children('img').attr('src');
 			$.ajax({
 				type: "POST",
 				url: "<?php echo get_site_url();?>/?do=save&id=<?php echo $id;?>",
-				data: {content:$("#design_area").contents().find('.main_sortable').html()},
+				data: {content:$("#design_area").contents().find('.main_sortable').html(),menu:JSON.stringify(menu_style)},
 				success: function(html){
 					alert('Success');
 					$('#design_area')[0].contentWindow.run_after_save();
@@ -74,7 +79,7 @@ $upload_dir = wp_upload_dir();
 		});
 		$.getJSON('<?php echo get_stylesheet_directory_uri();?>/sections/list.json',function(data){
 			$.each(data.sections,function(i){
-				$('#ready_made').append('<div class="add_section" data-section-name="'+data.sections[i]['file']+'" style="text-align:center;cursor:pointer;font-size:10px;margin-bottom:10px;box-shadow:inset 0 0 0 1px #EEE;"><img src="<?php echo get_stylesheet_directory_uri();?>/sections/'+data.sections[i]['file']+'.gif" /><br />'+data.sections[i]['name']+'</div>');
+				$('#ready_made').append('<div class="add_section" data-section-name="'+data.sections[i]['file']+'" style="text-align:center;cursor:pointer;font-size:10px;margin-bottom:10px;box-shadow:inset 0 0 0 1px #EEE;"><img src="<?php echo get_stylesheet_directory_uri();?>/sections/'+data.sections[i]['file']+'.gif" style="width:100%;" /><br />'+data.sections[i]['name']+'</div>');
 			});
 		});
 		image_uploader = new qq.FileUploader({
@@ -109,7 +114,9 @@ $upload_dir = wp_upload_dir();
 			if($(this).children('img').attr('alt')){
 				selected_image = $(this).children('img').attr('alt');
 			} else {
-				selected_image = $(this).children('img').attr('src');
+				$.get("<?php echo get_site_url();?>/?do=get_image&id="+$(this).attr('data-id'),function(data){
+					selected_image = data;
+				});
 			}
 		});
 		$("#select_image").click(function(){
@@ -241,10 +248,7 @@ $upload_dir = wp_upload_dir();
 			$('#menu_opacity').val(opacity_value);
 		});
 		$("body").on("click",".image_edit",function(){
-			if($(this).parent().parent().hasClass('image')){
-				active_element = $(this).parent().parent();
-			}
-			parent.image_edit();
+			image_edit();
 		});
 		menu_id = '';
 		$("body").on("click",".remove_menu",function(){
@@ -411,7 +415,7 @@ $upload_dir = wp_upload_dir();
 				tags[i] = $(this).val();
 				i++;
 			});
-			$('#design_area')[0].contentWindow.set_content(categories,tags);
+			$('#design_area')[0].contentWindow.set_content(categories,tags,1);
 			$('#contentModal').modal('hide');
 		});
 		$("#menu").click(function(){
@@ -442,7 +446,7 @@ $upload_dir = wp_upload_dir();
 					$('#design_area').contents().find('.add_section').replaceWith(data);
 					$('#design_area')[0].contentWindow.load_element_panel();
 					load_add_item_drag();
-					if(section_name == 'portfolio' || section_name == 'blog'){
+					if(section_name == 'blog'){
 						$('#contentModal').modal('show');
 					}
 				});
@@ -517,6 +521,13 @@ $upload_dir = wp_upload_dir();
 	}
 	function image_edit(){
 		$('#imageModal').modal('show');
+		if($('#site_images').html()==''){
+			$.getJSON('<?php echo get_site_url();?>/?do=get_images',function(data){
+				$.each(data,function(i){
+					$('#site_images').append('<div class="select" data-id="'+data[i].id+'" style="width:100px;height:100px;overflow:hidden;float:left;margin:10px;"><img src="'+data[i].thumb+'" height="100" /></div>');
+				});
+			});
+		}
 	}
 	function icon_edit(){
 		$('#iconModal').modal('show');
@@ -773,13 +784,13 @@ $upload_dir = wp_upload_dir();
 			</select>
 			<div id="ready_made"></div>
 			<div id="basic_elements" style="display:none;">
-				<div class="add_item" data-item="grid" style="width:100px;margin:15px;margin-left:22px;margin-top:0;padding:10px;background-color:#EEE;border-radius:5px;float:left;text-align:center;border:1px solid #CCC;cursor:pointer;"><span class="fa fa-th" style="font-size:26px;margin-bottom:10px;"></span><br />Grid</div>
-				<div class="add_item" data-item="text" style="width:100px;margin:15px;margin-top:0;padding:10px;background-color:#EEE;border-radius:5px;float:left;text-align:center;border:1px solid #CCC;cursor:pointer;"><span class="fa fa-font" style="font-size:26px;margin-bottom:10px;"></span><br />Text</div>
-				<div class="add_item" data-item="image" style="width:100px;margin:15px;margin-left:22px;margin-top:0;padding:10px;background-color:#EEE;border-radius:5px;float:left;text-align:center;border:1px solid #CCC;cursor:pointer;"><span class="fa fa-picture-o" style="font-size:26px;margin-bottom:10px;"></span><br />Image</div>
-				<div class="add_item" data-item="icon" style="width:100px;margin:15px;margin-top:0;padding:10px;background-color:#EEE;border-radius:5px;float:left;text-align:center;border:1px solid #CCC;cursor:pointer;"><span class="fa fa-font-awesome" style="font-size:26px;margin-bottom:10px;"></span><br />Icon</div>
-				<div class="add_item" data-item="button" style="width:100px;margin:15px;margin-left:22px;margin-top:0;padding:10px;background-color:#EEE;border-radius:5px;float:left;text-align:center;border:1px solid #CCC;cursor:pointer;"><span class="fa fa-square-o" style="font-size:26px;margin-bottom:10px;"></span><br />Button</div>
-				<div class="add_item" data-item="slider" style="width:100px;margin:15px;margin-top:0;padding:10px;background-color:#EEE;border-radius:5px;float:left;text-align:center;border:1px solid #CCC;cursor:pointer;"><span class="glyphicon glyphicon-option-horizontal" style="font-size:26px;margin-bottom:10px;"></span><br />Slider</div>
-				<div class="add_item" data-item="form" style="width:100px;margin:15px;margin-left:22px;margin-top:0;padding:10px;background-color:#EEE;border-radius:5px;float:left;text-align:center;border:1px solid #CCC;cursor:pointer;"><span class="fa fa-check-square-o" style="font-size:26px;margin-bottom:10px;"></span><br />Form</div>
+				<div style="width:50%;float:left;margin-bottom:15px;"><div class="add_item" data-item="grid" style="width:100px;padding:10px;background-color:#EEE;border-radius:5px;text-align:center;border:1px solid #CCC;cursor:pointer;margin:auto;"><span class="fa fa-th" style="font-size:26px;margin-bottom:10px;"></span><br />Grid</div></div>
+				<div style="width:50%;float:left;margin-bottom:15px;"><div class="add_item" data-item="text" style="width:100px;padding:10px;background-color:#EEE;border-radius:5px;text-align:center;border:1px solid #CCC;cursor:pointer;margin:auto;"><span class="fa fa-font" style="font-size:26px;margin-bottom:10px;"></span><br />Text</div></div>
+				<div style="width:50%;float:left;margin-bottom:15px;"><div class="add_item" data-item="image" style="width:100px;padding:10px;background-color:#EEE;border-radius:5px;text-align:center;border:1px solid #CCC;cursor:pointer;margin:auto;"><span class="fa fa-picture-o" style="font-size:26px;margin-bottom:10px;"></span><br />Image</div></div>
+				<div style="width:50%;float:left;margin-bottom:15px;"><div class="add_item" data-item="icon" style="width:100px;padding:10px;background-color:#EEE;border-radius:5px;text-align:center;border:1px solid #CCC;cursor:pointer;margin:auto;"><span class="fa fa-font-awesome" style="font-size:26px;margin-bottom:10px;"></span><br />Icon</div></div>
+				<div style="width:50%;float:left;margin-bottom:15px;"><div class="add_item" data-item="button" style="width:100px;padding:10px;background-color:#EEE;border-radius:5px;text-align:center;border:1px solid #CCC;cursor:pointer;margin:auto;"><span class="fa fa-square-o" style="font-size:26px;margin-bottom:10px;"></span><br />Button</div></div>
+				<div style="width:50%;float:left;margin-bottom:15px;"><div class="add_item" data-item="slider" style="width:100px;padding:10px;background-color:#EEE;border-radius:5px;text-align:center;border:1px solid #CCC;cursor:pointer;margin:auto;"><span class="glyphicon glyphicon-option-horizontal" style="font-size:26px;margin-bottom:10px;"></span><br />Slider</div></div>
+				<div style="width:50%;float:left;margin-bottom:15px;"><div class="add_item" data-item="form" style="width:100px;padding:10px;background-color:#EEE;border-radius:5px;text-align:center;border:1px solid #CCC;cursor:pointer;margin:auto;"><span class="fa fa-check-square-o" style="font-size:26px;margin-bottom:10px;"></span><br />Form</div></div>
 			</div>
 		</div>
 	</div>
@@ -829,20 +840,7 @@ $upload_dir = wp_upload_dir();
 					<div class="tab-content" style="margin-top:20px;">
 						<div role="tabpanel" class="tab-pane active" id="used_images">
 							<div id="file-uploader"></div>
-							<div id="site_images">
-								<?php
-								/*if(isset($_SESSION['user']) && isset($_GET['id'])){
-									if($handle = opendir('websites/'.$_SESSION['user'].'/'.$_GET['id'].'/images/')){
-										while(false!==($entry = readdir($handle))){
-											if($entry!='.' && $entry!='..'){
-												echo '<div class="select" style="width:100px;height:100px;overflow:hidden;float:left;margin:10px;"><img src="/websites/'.$_SESSION['user'].'/'.$_GET['id'].'/images/'.$entry.'" height="100" /></div>';
-											}
-										}
-										closedir($handle);
-									}
-								}*/
-								?>
-							</div>
+							<div id="site_images"></div>
 						</div>
 						<div role="tabpanel" class="tab-pane" id="image_library">
 							<div class="input-group" style="width:300px;">

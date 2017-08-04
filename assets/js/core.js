@@ -79,6 +79,20 @@ $(document).ready(function(){
 		}
 	});
 	load_element_panel();
+	$('.dynamic_content').each(function(){
+		active_element = $(this);
+		if($(this).attr('data-categories')){
+			categories = $(this).attr('data-categories');
+		} else {
+			categories = '';
+		}
+		if($(this).attr('data-tags')){
+			tags = $(this).attr('data-tags');
+		} else {
+			tags = '';
+		}
+		set_content(categories,tags,0);
+	});
 });
 function load_element_panel(){
 	$('.element').each(function(){
@@ -89,6 +103,10 @@ function load_element_panel(){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil form_edit" style="font-size:26px;margin:5px;"></span></div>');
 			} else if($(this).hasClass('grid')){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-columns column_settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-plus add_row" style="font-size:26px;margin:5px;"></span><span class="fa fa-minus remove_row" style="font-size:26px;margin:5px;"></span></div>');
+				if($(this).hasClass('dynamic_content')){
+					$(this).children('.element_panel').children('.add_row').remove();
+					$(this).children('.element_panel').children('.remove_row').remove();
+				}
 			} else if($(this).hasClass('icon')){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil icon_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link icon_link" style="font-size:26px;margin:5px;"></span></div>');
 			} else if($(this).hasClass('image')){
@@ -102,6 +120,9 @@ function load_element_panel(){
 			}
 		}
 	});
+	$('.dynamic_content').find('.image').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
+	$('.dynamic_content').find('.text').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
+	$('.dynamic_content').find('.button').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil button_edit" style="font-size:26px;margin:5px;"></span>');
 }
 function update_link(link){
 	if($(active_element).hasClass('text')){
@@ -228,6 +249,5 @@ function run_after_save(){
 	$('section').each(function(){
 		$(this).prepend('<div style="position:absolute;z-index:97;background:rgba(255,204,0,0.8);cursor:default;"><span class="fa fa-arrow-up section_up" style="font-size:26px;margin:5px;"></span><span class="fa fa-arrow-down section_down" style="font-size:26px;margin:5px;"></span><span class="fa fa-clone section_duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash section_delete" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog section_settings" style="font-size:26px;margin:5px;"></span></div>');
 	});
-	$('.grid').find('.sortable').css('border','1px dashed #000');
 	load_element_panel();
 }

@@ -10,7 +10,6 @@ function custom_toolbar_link($wp_admin_bar){
 	}
 }
 add_action('admin_bar_menu','custom_toolbar_link',999);
-if(is_super_admin()){
 if(isset($_GET['do'])){
     if($_GET['do']=='get_pages'){
     	$pages = get_pages();
@@ -22,10 +21,11 @@ if(isset($_GET['do'])){
 		}
 		echo json_encode($new_pages);
 		exit;
-    } else if($_GET['do']=='save'){
+    } else if($_GET['do']=='save' && is_super_admin()){
 		$my_post = array('ID'=>$_GET['id'],'post_content'=>$_POST['content']);
 		wp_update_post($my_post);
 		add_post_meta($_GET['id'],'kodyok_content','1',true);
+		update_option('menu_style',stripslashes($_POST['menu']));
 		exit;
     } else if($_GET['do']=='get_content'){
     	if(isset($_GET['categories'])){
@@ -47,14 +47,20 @@ if(isset($_GET['do'])){
 			$new_posts[$i]['title'] = $post->post_title;
 			$images = get_attached_media('',$post->ID);
 			foreach($images as $image){
-				$new_posts[$i]['image'] = $image->guid;
+				$new_posts[$i]['image'] = wp_get_attachment_image_src($image->ID,'medium')[0];
+				$new_posts[$i]['width'] = wp_get_attachment_image_src($image->ID,'medium')[1];
+				$new_posts[$i]['height'] = wp_get_attachment_image_src($image->ID,'medium')[2];
 			}
-			$new_posts[$i]['guid'] = $post->guid;
+			if(get_permalink($post->ID)){
+				$new_posts[$i]['link'] = get_permalink($post->ID);
+			} else {
+				$new_posts[$i]['link'] = get_site_url().'/?p='.$post->ID;
+			}
 			$i++;
 		}
 		echo json_encode($new_posts);
 		exit;
-    } else if($_GET['do']=='remove_menu'){
+    } else if($_GET['do']=='remove_menu' && is_super_admin()){
     	wp_delete_post($_GET['id']);
     	$items = wp_get_nav_menu_items('navigation');
     	$i = 1;
@@ -64,7 +70,7 @@ if(isset($_GET['do'])){
 	        $i++;
 		}
     	exit;
-    } else if($_GET['do']=='update_menu'){
+    } else if($_GET['do']=='update_menu' && is_super_admin()){
     	wp_update_nav_menu_item($_GET['menu_id'], $_GET['item_id'], array(
             'menu-item-title' =>  __($_GET['title']),
             'menu-item-url' => $_GET['link'],
@@ -73,7 +79,7 @@ if(isset($_GET['do'])){
             'menu-item-status' => 'publish'
         ));
         exit;
-    } else if($_GET['do']=='update_menu_list'){
+    } else if($_GET['do']=='update_menu_list' && is_super_admin()){
     	$items = explode(',',$_GET['items']);
     	$i = 1;
 		foreach($items as $item){
@@ -84,7 +90,7 @@ if(isset($_GET['do'])){
 	    	}
 		}
     	exit;
-    } else if($_GET['do']=='add_menu_item'){
+    } else if($_GET['do']=='add_menu_item' && is_super_admin()){
     	echo wp_update_nav_menu_item($_GET['menu_id'], 0, array(
             'menu-item-title' =>  __($_GET['title']),
             'menu-item-url' => '#',
@@ -92,6 +98,26 @@ if(isset($_GET['do'])){
             'menu-item-position' => $_GET['position'],
             'menu-item-status' => 'publish'
         ));
+    	exit;
+    } else if($_GET['do']=='get_images'){
+    	$query_images_args = array(
+			'post_type' => 'attachment',
+			'post_mime_type' => 'image',
+			'post_status' => 'inherit',
+			'posts_per_page' => -1,
+		);
+		$query_images = new WP_Query($query_images_args);
+		$images = array();
+		$i = 0;
+		foreach($query_images->posts as $image){
+			$images[$i]['id'] = $image->ID;
+			$images[$i]['thumb'] = wp_get_attachment_thumb_url($image->ID);
+			$i++;
+		}
+		echo json_encode($images);
+		exit;
+    } else if($_GET['do']=='get_image'){
+    	echo wp_get_attachment_image_src($_GET['id'],'intermediate')[0];
     	exit;
     }
 }
@@ -102,6 +128,5 @@ function kodyok_button(){
 jQuery("#postdivrich").prepend('<br /><br /><a href="<?php echo get_site_url().'/?p='.$_GET['post'];?>&kodyok" style="background-color:#00ccff;color:#333;font-size:20px;padding:15px;border:2px solid #ffcc00;text-decoration:none;">Edit with Kodyok</a><br /><br />');
 </script>
 <?php
-}
 }
 ?>
