@@ -4,7 +4,6 @@ if(isset($_GET['p'])){
 } else {
 	$id = get_the_ID();
 }
-$upload_dir = wp_upload_dir();
 ?>
 <html>
 <head>
@@ -18,8 +17,6 @@ $upload_dir = wp_upload_dir();
 	<link type="text/css" href="<?php echo get_stylesheet_directory_uri();?>/assets/css/jquery-ui.min.css" rel="stylesheet" />
 	<script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/colpick.js"></script>
     <link href="<?php echo get_stylesheet_directory_uri();?>/assets/css/colpick.css" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/fileuploader.js"></script>
-	<link href="<?php echo get_stylesheet_directory_uri();?>/assets/css/fileuploader.css" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/font-awesome/css/font-awesome.min.css">
 	<script type="text/javascript">
 	$(document).ready(function(){
@@ -82,60 +79,18 @@ $upload_dir = wp_upload_dir();
 				$('#ready_made').append('<div class="add_section" data-section-name="'+data.sections[i]['file']+'" style="text-align:center;cursor:pointer;font-size:10px;margin-bottom:10px;box-shadow:inset 0 0 0 1px #EEE;"><img src="<?php echo get_stylesheet_directory_uri();?>/sections/'+data.sections[i]['file']+'.gif" style="width:100%;" /><br />'+data.sections[i]['name']+'</div>');
 			});
 		});
-		image_uploader = new qq.FileUploader({
-	        element: document.getElementById('file-uploader'),
-	        action: '<?php echo get_stylesheet_directory_uri();?>/upload.php?root=<?php echo $upload_dir['path'];?>',
-	        debug: false,
-			onComplete: function(id, fileName, responseJSON){
-				$('#site_images').prepend('<div class="select" style="width:100px;height:100px;overflow:hidden;float:left;margin:10px;"><img src="<?php echo $upload_dir['url'];?>/'+fileName+'" height="100" /></div>');
-			}
-	    });
-	    $("body").on("click","#image_search_submit",function(){
-			if($('#image_search').val()!=''){
-				$('#image_search_submit').attr('disabled','disabled');
-				$.getJSON("https://pixabay.com/api/?key=1340270-d844245c268d05d6e2097dc1b&q="+encodeURIComponent($('#image_search').val()),function(data){
-				    if(parseInt(data.totalHits)>0){
-				    	$('#ready_images').html('');
-						$.each(data.hits,function(i,hit){
-							$('#ready_images').append('<div class="select" style="width:100px;height:100px;overflow:hidden;float:left;margin:10px;"><img src="'+hit.previewURL+'" alt="'+hit.webformatURL+'" height="100" /></div>');
-						});
-				    } else {
-						$('#ready_images').html('No hits');
-				    }
-				    $('#image_search_submit').removeAttr('disabled');
-				});
-			}
-		});
 	    $("body").on("click",".select",function(){
 			$('#select_image').removeAttr('disabled');
 			$('#site_images > div').css('border','');
-			$('#ready_images > div').css('border','');
 			$(this).css('border','5px solid #00ccff');
-			if($(this).children('img').attr('alt')){
-				selected_image = $(this).children('img').attr('alt');
-			} else {
-				$.get("<?php echo get_site_url();?>/?do=get_image&id="+$(this).attr('data-id'),function(data){
-					selected_image = data;
-				});
-			}
+			selected_image_id = $(this).attr('data-id');
+			$.get("<?php echo get_site_url();?>/?do=get_image&size=intermediate&id="+$(this).attr('data-id'),function(data){
+				selected_image = data;
+			});
 		});
 		$("#select_image").click(function(){
-			from_web = selected_image[0]+selected_image[1]+selected_image[2]+selected_image[3]+selected_image[4]+selected_image[5]+selected_image[6]+selected_image[7];
-			if(from_web=='https://'){
-				$.ajax({
-					type: "GET",
-					url: "save_image.php?url="+selected_image+"&root=<?php echo $upload_dir['path'];?>",
-					success: function(html) {
-						$('#site_images').prepend('<div class="select" style="width:100px;height:100px;overflow:hidden;float:left;margin:10px;"><img src="<?php echo $upload_dir['url'];?>/'+html+'" height="100" /></div>');
-						$('#design_area')[0].contentWindow.update_image('<?php echo $upload_dir['url'];?>/'+html);
-						$('#imageModal').modal('hide');
-					}
-				});
-				return false;
-			} else {
-				$('#design_area')[0].contentWindow.update_image(selected_image);
-				$('#imageModal').modal('hide');
-			}
+			$('#design_area')[0].contentWindow.update_image(selected_image,selected_image_id);
+			$('#imageModal').modal('hide');
 		});
 		$("body").on("input","#icon_search",function(){
 			if($('#icon_search').val()!=''){
@@ -378,15 +333,18 @@ $upload_dir = wp_upload_dir();
 			$('#design_area')[0].contentWindow.form_edit_item(form_id);
 		});
 		$("body").on("click",".add_id",function(){
-			$('#section_id').parent().removeClass('has-error');
-			$('#section_id').attr('placeholder','Section ID');
-			regexp = /^[a-zA-Z]+$/;
-			if($('#section_id').val()!='' && $('#section_id').val().search(regexp)==-1){
-				$('#section_id').parent().addClass('has-error');
-				$('#section_id').val('');
-				$('#section_id').attr('placeholder','Only these characters; a-z A-Z');
-			} else {
-				$('#design_area')[0].contentWindow.add_id($('#section_id').val());
+			if($('#section_id').val()!=''){
+				$('#section_id').parent().removeClass('has-error');
+				$('#section_id').attr('placeholder','Section ID');
+				regexp = /^[a-zA-Z]+$/;
+				if($('#section_id').val().search(regexp)==-1){
+					$('#section_id').parent().addClass('has-error');
+					$('#section_id').val('');
+					$('#section_id').attr('placeholder','Only these characters; a-z A-Z');
+				} else {
+					$('#design_area')[0].contentWindow.add_id($('#section_id').val());
+					alert('Success');
+				}
 			}
 		});
 		$('#linkModal').on('hidden.bs.modal',function(){
@@ -420,6 +378,11 @@ $upload_dir = wp_upload_dir();
 		});
 		$("#menu").click(function(){
 			$('#design_area')[0].contentWindow.get_menu_settings();
+		});
+		$("#save_email").click(function(){
+			$.get("<?php echo get_site_url();?>/?do=update_email&email="+$('#form_email').val(),function(data){
+				alert('Success');
+			});
 		});
 	});
 	function load_add_section_drag(){
@@ -529,6 +492,11 @@ $upload_dir = wp_upload_dir();
 			});
 		}
 	}
+	function add_new_image(id){
+		$.get("<?php echo get_site_url();?>/?do=get_image&size=thumbnail&id="+id,function(data){
+			$('#site_images').prepend('<div class="select" data-id="'+id+'" style="width:100px;height:100px;overflow:hidden;float:left;margin:10px;"><img src="'+data+'" height="100" /></div>');
+		});
+	}
 	function icon_edit(){
 		$('#iconModal').modal('show');
 	}
@@ -634,6 +602,14 @@ $upload_dir = wp_upload_dir();
 						<td>Border color:</td><td align="center"># <input type="text" class="picker" data-type="image_border"></input></td>
 					</tr>
 				</table>
+			</div>
+			<div id="form_settings" style="display:none;">
+				<div class="input-group">
+					<input type="text" id="form_email" class="form-control" placeholder="Email of receiver" value="<?php echo get_option('form_email');?>">
+					<span class="input-group-btn">
+			    		<button class="btn btn-default" id="save_email" type="button">Save</button>
+			    	</span>
+			    </div>
 			</div>
 			<div id="form_edit_settings" style="display:none;">
 				<div class="input-group">
@@ -832,27 +808,10 @@ $upload_dir = wp_upload_dir();
 	<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog" style="width:1000px;">
 			<div class="modal-content">
-				<div class="modal-body" style="height:500px;overflow:scroll;">
-					<ul class="nav nav-tabs" role="tablist">
-						<li role="presentation" class="active"><a href="#used_images" aria-controls="home" role="tab" data-toggle="tab">Used images</a></li>
-						<li role="presentation"><a href="#image_library" aria-controls="profile" role="tab" data-toggle="tab">Ready images</a></li>
-					</ul>
-					<div class="tab-content" style="margin-top:20px;">
-						<div role="tabpanel" class="tab-pane active" id="used_images">
-							<div id="file-uploader"></div>
-							<div id="site_images"></div>
-						</div>
-						<div role="tabpanel" class="tab-pane" id="image_library">
-							<div class="input-group" style="width:300px;">
-								<input type="text" id="image_search" class="form-control">
-								<span class="input-group-btn">
-									<button type="button" class="btn btn-default" id="image_search_submit">Search</button>
-								</span>
-							</div>
-							<div id="ready_images"></div>
-						</div>
-					</div>
+				<div class="modal-header">
+					<iframe src="<?php echo get_site_url();?>/?do=upload_screen" style="width:100%;height:40px;border:0;"></iframe>
 				</div>
+				<div id="site_images" class="modal-body" style="height:500px;overflow:scroll;"></div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					<button type="button" class="btn btn-primary" id="select_image" disabled="disabled">Select</button>

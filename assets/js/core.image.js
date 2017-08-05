@@ -16,7 +16,7 @@ function get_image_settings(){
 function select_active_element(){
 	active_element = $('img[src="'+get_stylesheet_directory_uri+'/assets/img/blank.gif"]').parent().parent();
 }
-function update_image(selected_image){
+function update_image(selected_image,id){
 	if($(active_element).prop("tagName")=='SECTION'){
 		rgb_value = $(active_element).css('background-color').split(',');
 		if(rgb_value.length==4){
@@ -49,10 +49,14 @@ function update_image(selected_image){
 	} else if($(active_element).hasClass('navbar')){
 		$(active_element).children('.container').children('.navbar-header').children('.navbar-brand').html('<img src="'+selected_image+'" height="50" />');
 	} else if($(active_element).hasClass('image')){
-		if($(active_element).children('a').children('img').attr('src')==$(active_element).children('a').attr('href')){
+		if($(active_element).children('a').attr('data-lightbox')){
+			$.get(get_site_url+"/?do=get_image&size=medium&id="+id,function(data){
+				$(active_element).children('a').children('img').attr('src',data);
+			});
 			$(active_element).children('a').attr('href',selected_image);
+		} else {
+			$(active_element).children('a').children('img').attr('src',selected_image);
 		}
-		$(active_element).children('a').children('img').attr('src',selected_image);
 	} else if($(active_element).hasClass('slider')){
 		add_slider(selected_image);
 	}

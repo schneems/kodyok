@@ -1,29 +1,4 @@
 $(document).ready(function(){
-	$("body").on("click",".send_button",function(){
-		form_error = 0;
-		$(active_element).children('.form_content').children().each(function(){
-			if($(this).children('.form-group').children('input').val()==''){
-				form_error++;
-			}
-		});
-		if(form_error>0){
-			alert('This fields are required.');
-		} else {
-			dataString = 'data=';
-			$(active_element).children('.form_content').children().each(function(){
-				dataString += $(this).children('.form-group').children('input').attr('placeholder')+'{}'+$(this).children('.form-group').children('input').val()+'[]';
-			});
-			$.ajax({
-				type: "POST",
-				url: "form.php?id="+website_id,
-				data: dataString,
-				success: function(html) {
-					alert('Success!');
-				}
-			});
-			return false;
-		}
-	});
 	$('body').on('click','.form_edit',function(){
 		active_element = $(this).parent().parent();
 		$('#iframe',window.parent.document).css('width',$('#all_content',window.parent.document).width()-380);

@@ -32,6 +32,7 @@ if(!$menu_exists){
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/jquery-ui.min.js"></script>
     <link type="text/css" href="<?php echo get_stylesheet_directory_uri();?>/assets/css/jquery-ui.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/font-awesome/css/font-awesome.min.css">
+    <link href="<?php echo get_stylesheet_directory_uri();?>/assets/lightbox2/css/lightbox.min.css" rel="stylesheet">
     <?php
     if(isset($_GET['editor'])){
     ?>
@@ -67,6 +68,35 @@ if(!$menu_exists){
         wp_head();
     }
     ?>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("body").on("click",".send_button",function(){
+                form_error = 0;
+                $(this).parent().parent().children(".form_content").children().each(function(){
+                    if($(this).children('input').val()==''){
+                        form_error++;
+                    }
+                });
+                if(form_error>0){
+                    alert('This fields are required.');
+                } else {
+                    form_content = {};
+                    $(this).parent().parent().children(".form_content").children().each(function(){
+                        form_content[$(this).children('input').attr('placeholder')] = $(this).children('input').val();
+                    });
+                    $.ajax({
+                        type: "POST",
+                        url: get_site_url+"/?do=send_email",
+                        data: {content:JSON.stringify(form_content)},
+                        success: function(html){
+                            alert('Success');
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
+    </script>
 </head>
 <body style="margin:0;padding:0;">
     <?php

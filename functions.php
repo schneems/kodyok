@@ -117,7 +117,47 @@ if(isset($_GET['do'])){
 		echo json_encode($images);
 		exit;
     } else if($_GET['do']=='get_image'){
-    	echo wp_get_attachment_image_src($_GET['id'],'intermediate')[0];
+    	echo wp_get_attachment_image_src($_GET['id'],$_GET['size'])[0];
+    	exit;
+    } else if($_GET['do']=='upload_screen'){
+    	?>
+    	<body style="margin:0;padding:0;">
+	    	<form id="featured_upload" method="post" action="<?php echo get_site_url(); ?>/?do=upload_image" enctype="multipart/form-data" style="margin-bottom:0;">
+				<input type="file" name="my_image_upload" id="my_image_upload" multiple="false" />
+				<input type="hidden" name="post_id" id="post_id" value="0" />
+				<?php wp_nonce_field('my_image_upload','my_image_upload_nonce');?>
+				<input id="submit_my_image_upload" name="submit_my_image_upload" type="submit" value="Upload" style="width:150px;padding:5px;font-size:20px;text-align:center;background:#666;color:#fff;" />
+			</form>
+		</body>
+    	<?php
+    	exit;
+    } else if($_GET['do']=='upload_image'){
+		if(isset($_POST['my_image_upload_nonce'],$_POST['post_id']) && wp_verify_nonce($_POST['my_image_upload_nonce'],'my_image_upload')){
+			require_once(ABSPATH.'wp-admin/includes/image.php');
+			require_once(ABSPATH.'wp-admin/includes/file.php');
+			require_once(ABSPATH.'wp-admin/includes/media.php');
+			$attachment_id = media_handle_upload('my_image_upload',$_POST['post_id']);
+			if(!is_wp_error($attachment_id)){
+				?>
+				<script type="text/javascript">
+			        parent.add_new_image(<?php echo $attachment_id;?>);
+			    </script>
+				<?php
+			}
+		}
+		exit;
+    } else if($_GET['do']=='send_email'){
+    	$message = "";
+    	$datas = json_decode(stripslashes($_POST['content']));
+    	foreach($datas as $key => $val){
+			$message .= $key.': '.$val."\r\n<br /><br />";
+		}
+		$headers  = 'MIME-Version: 1.0'."\r\n";
+		$headers .= 'Content-type: text/html; charset=utf-8'."\r\n";
+		wp_mail(get_option('form_email'),'Contact Form',$message,$headers);
+		exit;
+    } else if($_GET['do']=='update_email'){
+    	update_option('form_email',$_GET['email']);
     	exit;
     }
 }

@@ -6,6 +6,8 @@ $(document).ready(function(){
 		if($(active_element).hasClass('button')){
 			get_button_settings();
     		$('#button_settings',window.parent.document).show();
+		} else if($(active_element).hasClass('form')){
+    		$('#form_settings',window.parent.document).show();
 		} else if($(active_element).hasClass('grid')){
 			get_grid_settings();
     		$('#grid_settings',window.parent.document).show();
