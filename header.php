@@ -42,7 +42,7 @@ if(!$menu_exists){
         get_stylesheet_directory_uri = '<?php echo get_stylesheet_directory_uri();?>';
         get_site_url = '<?php echo get_site_url();?>';
         $(document).ready(function(){
-            $('a').on('click',function(e){
+            $("body").on("click","a",function(e){
                 if($(this).attr('href')[0]!='#' && $(this).attr('target')!='_blank'){
                     e.preventDefault();
                     window.open($(this).attr('href')+'?kodyok','_top');

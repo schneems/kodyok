@@ -384,6 +384,11 @@ if(isset($_GET['p'])){
 				alert('Success');
 			});
 		});
+		$(".close_panel").click(function(){
+			$('#settings_menu > div').hide();
+			$('#iframe').css('width',$('#all_content').width()-80);
+			$('#settings_menu').hide();
+		});
 	});
 	function load_add_section_drag(){
 		$(".add_section").draggable({
@@ -534,74 +539,118 @@ if(isset($_GET['p'])){
 		</div>
 		<div id="settings_menu" style="width:300px;height:100%;position:fixed;float:left;background-color:#243343;padding:10px;display:none;">
 			<div id="margin_settings" style="display:none;">
-				<table width="100%" style="color:#677888;font-weight:bold;font-size:14px;margin-bottom:20px;">
-					<tr>
-						<td>Top space:</td><td align="center"><a href="#" class="set_margin" rel="top_minus"><span class="fa fa-minus"></span></a> <input type="text" id="top_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="top_plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-					<tr>
-						<td>Bottom space:</td><td align="center"><a href="#" class="set_margin" rel="bottom_minus"><span class="fa fa-minus"></span></a> <input type="text" id="bottom_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="bottom_plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-					<tr>
-						<td>Left space:</td><td align="center"><a href="#" class="set_margin" rel="left_minus"><span class="fa fa-minus"></span></a> <input type="text" id="left_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="left_plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-					<tr>
-						<td>Right space:</td><td align="center"><a href="#" class="set_margin" rel="right_minus"><span class="fa fa-minus"></span></a> <input type="text" id="right_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="right_plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-				</table>
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+					</div>
+				</div>
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Margin</h3>
+					</div>
+					<div class="panel-body">
+		    			<table width="100%" style="color:#677888;font-size:14px;">
+							<tr>
+								<td>Top space:</td><td align="right"><a href="#" class="set_margin" rel="top_minus"><span class="fa fa-minus"></span></a> <input type="text" id="top_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="top_plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+							<tr>
+								<td>Bottom space:</td><td align="right"><a href="#" class="set_margin" rel="bottom_minus"><span class="fa fa-minus"></span></a> <input type="text" id="bottom_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="bottom_plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+							<tr>
+								<td>Left space:</td><td align="right"><a href="#" class="set_margin" rel="left_minus"><span class="fa fa-minus"></span></a> <input type="text" id="left_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="left_plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+							<tr>
+								<td>Right space:</td><td align="right"><a href="#" class="set_margin" rel="right_minus"><span class="fa fa-minus"></span></a> <input type="text" id="right_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="right_plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+						</table>
+					</div>
+				</div>
 			</div>
 			<div id="grid_settings" style="display:none;">
-				<table width="100%" style="color:#677888;font-weight:bold;font-size:14px;">
-					<tr>
-						<td>Background color:</td><td align="center"># <input type="text" class="picker" data-type="grid_background"></input></td>
-					</tr>
-					<tr>
-						<td>Opacity:</td><td align="center"><a href="#" class="set_grid_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="grid_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_grid_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-				</table>
-				<br /><a href="#" class="remove_grid_background" style="color:#cc0000;">Delete background</a>
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Style</h3>
+					</div>
+					<div class="panel-body">
+						<table width="100%" style="color:#677888;font-size:14px;">
+							<tr>
+								<td>Background color:</td><td align="right"># <input type="text" class="picker" data-type="grid_background"></input></td>
+							</tr>
+							<tr>
+								<td>Opacity:</td><td align="right"><a href="#" class="set_grid_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="grid_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_grid_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+						</table>
+						<br /><a href="#" class="remove_grid_background" style="color:#cc0000;">Delete background</a>
+					</div>
+				</div>
 			</div>
-			<div id="column_settings" style="color:#677888;font-weight:bold;font-size:14px;display:none;">
-				Column options:<br />
-				<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_01.png" class="set_column" rel="1" style="margin:4px;border:1px solid #EEE;" />
-				<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_02.png" class="set_column" rel="2" style="margin:4px;border:1px solid #666;" />
-				<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_03.png" class="set_column" rel="3" style="margin:4px;border:1px solid #666;" />
-				<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_04.png" class="set_column" rel="4" style="margin:4px;border:1px solid #666;" />
-				<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_05.png" class="set_column" rel="5" style="margin:4px;border:1px solid #666;" /><br />
-				<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_06.png" class="set_column" rel="6" style="margin:4px;border:1px solid #666;" />
-				<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_07.png" class="set_column" rel="7" style="margin:4px;border:1px solid #666;" />
-				<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_08.png" class="set_column" rel="8" style="margin:4px;border:1px solid #666;" />
-				<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_09.png" class="set_column" rel="9" style="margin:4px;border:1px solid #666;" />
-				<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_10.png" class="set_column" rel="10" style="margin:4px;border:1px solid #666;" />
-				<div id="customize_layout"></div>
+			<div id="column_settings" style="display:none;">
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+					</div>
+				</div>
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Column</h3>
+					</div>
+					<div class="panel-body" style="padding-left:5px;padding-right:5px;">
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_01.png" class="set_column" rel="1" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_02.png" class="set_column" rel="2" style="margin:4px;border:1px solid #666;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_03.png" class="set_column" rel="3" style="margin:4px;border:1px solid #666;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_04.png" class="set_column" rel="4" style="margin:4px;border:1px solid #666;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_05.png" class="set_column" rel="5" style="margin:4px;border:1px solid #666;" /><br />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_06.png" class="set_column" rel="6" style="margin:4px;border:1px solid #666;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_07.png" class="set_column" rel="7" style="margin:4px;border:1px solid #666;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_08.png" class="set_column" rel="8" style="margin:4px;border:1px solid #666;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_09.png" class="set_column" rel="9" style="margin:4px;border:1px solid #666;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_10.png" class="set_column" rel="10" style="margin:4px;border:1px solid #666;" />
+						<div id="customize_layout" style="color:#677888;font-size:14px;margin-top:10px;text-align:center;"></div>
+					</div>
+				</div>
 			</div>
 			<div id="icon_settings" style="display:none;">
-				<table width="100%" style="color:#677888;font-weight:bold;font-size:14px;">
-					<tr>
-						<td>Align:</td><td align="center"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
-					</tr>
-					<tr>
-						<td>Color:</td><td align="center"># <input type="text" class="picker" data-type="icon"></input></td>
-					</tr>
-					<tr>
-						<td>Size:</td><td align="center"><a href="#" class="set_icon_size" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="icon_size" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_icon_size" rel="plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-				</table>
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Style</h3>
+					</div>
+					<div class="panel-body">
+						<table width="100%" style="color:#677888;font-size:14px;">
+							<tr>
+								<td>Align:</td><td align="right"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
+							</tr>
+							<tr>
+								<td>Color:</td><td align="right"># <input type="text" class="picker" data-type="icon"></input></td>
+							</tr>
+							<tr>
+								<td>Size:</td><td align="right"><a href="#" class="set_icon_size" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="icon_size" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_icon_size" rel="plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+						</table>
+					</div>
+				</div>
 			</div>
 			<div id="image_settings" style="display:none;">
-				<table width="100%" style="color:#677888;font-weight:bold;font-size:14px;">
-					<tr>
-						<td>Align:</td><td align="center"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
-					</tr>
-					<tr>
-						<td>Shape:</td><td align="center"><a href="#" class="set_shape" rel="circle"><span class="fa fa-circle" style="font-size:26px;"></span></a> <a href="#" class="set_shape" rel="square"><span class="fa fa-square" style="font-size:26px;"></span></a></td>
-					</tr>
-					<tr>
-						<td>Border:</td><td align="center"><a href="#" class="set_image_border" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="image_border" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_image_border" rel="plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-					<tr>
-						<td>Border color:</td><td align="center"># <input type="text" class="picker" data-type="image_border"></input></td>
-					</tr>
-				</table>
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Style</h3>
+					</div>
+					<div class="panel-body">
+						<table width="100%" style="color:#677888;font-size:14px;">
+							<tr>
+								<td>Align:</td><td align="right"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
+							</tr>
+							<tr>
+								<td>Shape:</td><td align="right"><a href="#" class="set_shape" rel="circle"><span class="fa fa-circle" style="font-size:26px;"></span></a> <a href="#" class="set_shape" rel="square"><span class="fa fa-square" style="font-size:26px;"></span></a></td>
+							</tr>
+							<tr>
+								<td>Border:</td><td align="right"><a href="#" class="set_image_border" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="image_border" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_image_border" rel="plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+							<tr>
+								<td>Border color:</td><td align="right"># <input type="text" class="picker" data-type="image_border"></input></td>
+							</tr>
+						</table>
+					</div>
+				</div>
 			</div>
 			<div id="form_settings" style="display:none;">
 				<div class="input-group">
@@ -612,6 +661,11 @@ if(isset($_GET['p'])){
 			    </div>
 			</div>
 			<div id="form_edit_settings" style="display:none;">
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+					</div>
+				</div>
 				<div class="input-group">
 					<input type="text" id="input_name" class="form-control" placeholder="New input">
 					<span class="input-group-btn">
@@ -634,123 +688,154 @@ if(isset($_GET['p'])){
 				</div>
 		    </div>
 		    <div id="button_settings" style="display:none;">
-		    	<table width="100%" style="color:#677888;font-weight:bold;font-size:14px;">
-		    		<tr>
-						<td>Align:</td><td align="center"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
-					</tr>
-		    		<tr>
-						<td>Background color:</td><td align="center"># <input type="text" class="picker" data-type="button_background"></input></td>
-					</tr>
-					<tr>
-						<td>Opacity:</td><td align="center"><a href="#" class="set_button_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="button_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_button_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-				</table>
-				<select class="form-control" id="button_change_font" style="width:50%;float:left;">
-					<option value="0">Select font</option>
-					<option value="Georgia, serif">Georgia</option>
-					<option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino</option>
-					<option value="'Times New Roman', Times, serif">Times New Roman</option>
-					<option value="Arial, Helvetica, sans-serif">Arial</option>
-					<option value="'Arial Black', Gadget, sans-serif">Arial Black</option>
-					<option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
-					<option value="Impact, Charcoal, sans-serif">Impact</option>
-					<option value="'Lucida Sans Unicode', 'Lucida Grande', sans-serif">Lucida Sans Unicode</option>
-					<option value="Tahoma, Geneva, sans-serif">Tahoma</option>
-					<option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
-					<option value="Verdana, Geneva, sans-serif">Verdana</option>
-					<option value="'Courier New', Courier, monospace">Courier New</option>
-					<option value="'Lucida Console', Monaco, monospace">Lucida Console</option>
-				</select>
-				<select class="form-control" id="button_change_size" style="width:50%;">
-					<option value="0">Size</option>
-					<option value="8">8</option>
-					<option value="9">9</option>
-					<option value="10">10</option>
-					<option value="11">11</option>
-					<option value="12">12</option>
-					<option value="14">14</option>
-					<option value="16">16</option>
-					<option value="18">18</option>
-					<option value="20">20</option>
-					<option value="22">22</option>
-					<option value="24">24</option>
-					<option value="26">26</option>
-					<option value="28">28</option>
-					<option value="36">36</option>
-					<option value="48">48</option>
-					<option value="72">72</option>
-				</select>
-				<table width="100%" style="color:#677888;font-weight:bold;font-size:14px;">
-					<tr>
-						<td>Font color:</td><td align="center"># <input type="text" class="picker" data-type="button_font"></input></td>
-					</tr>
-					<tr>
-						<td>Border:</td><td align="center"><a href="#" class="set_button_border" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="button_border" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_button_border" rel="plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-					<tr>
-						<td>Border color:</td><td align="center"># <input type="text" class="picker" data-type="button_border"></input></td>
-					</tr>
-				</table>
+		    	<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Style</h3>
+					</div>
+					<div class="panel-body">
+				    	<table width="100%" style="color:#677888;font-size:14px;">
+				    		<tr>
+								<td>Align:</td><td align="right"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
+							</tr>
+				    		<tr>
+								<td>Background color:</td><td align="right"># <input type="text" class="picker" data-type="button_background"></input></td>
+							</tr>
+							<tr>
+								<td>Opacity:</td><td align="right"><a href="#" class="set_button_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="button_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_button_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+						</table>
+						<select class="form-control" id="button_change_font" style="width:50%;float:left;">
+							<option value="0">Select font</option>
+							<option value="Georgia, serif">Georgia</option>
+							<option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino</option>
+							<option value="'Times New Roman', Times, serif">Times New Roman</option>
+							<option value="Arial, Helvetica, sans-serif">Arial</option>
+							<option value="'Arial Black', Gadget, sans-serif">Arial Black</option>
+							<option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
+							<option value="Impact, Charcoal, sans-serif">Impact</option>
+							<option value="'Lucida Sans Unicode', 'Lucida Grande', sans-serif">Lucida Sans Unicode</option>
+							<option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+							<option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
+							<option value="Verdana, Geneva, sans-serif">Verdana</option>
+							<option value="'Courier New', Courier, monospace">Courier New</option>
+							<option value="'Lucida Console', Monaco, monospace">Lucida Console</option>
+						</select>
+						<select class="form-control" id="button_change_size" style="width:50%;">
+							<option value="0">Size</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+							<option value="11">11</option>
+							<option value="12">12</option>
+							<option value="14">14</option>
+							<option value="16">16</option>
+							<option value="18">18</option>
+							<option value="20">20</option>
+							<option value="22">22</option>
+							<option value="24">24</option>
+							<option value="26">26</option>
+							<option value="28">28</option>
+							<option value="36">36</option>
+							<option value="48">48</option>
+							<option value="72">72</option>
+						</select>
+						<table width="100%" style="color:#677888;font-size:14px;">
+							<tr>
+								<td>Font color:</td><td align="right"># <input type="text" class="picker" data-type="button_font"></input></td>
+							</tr>
+							<tr>
+								<td>Border:</td><td align="right"><a href="#" class="set_button_border" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="button_border" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_button_border" rel="plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+							<tr>
+								<td>Border color:</td><td align="right"># <input type="text" class="picker" data-type="button_border"></input></td>
+							</tr>
+						</table>
+					</div>
+				</div>
 			</div>
 			<div id="menu_settings" style="height:100%;overflow:scroll;display:none;">
-				<a href="#" class="image_edit" style="color:#cc0000;">Select logo</a>
-				<table width="100%" style="margin-top:15px;margin-bottom:15px;color:#677888;font-weight:bold;font-size:14px;">
-					<tr>
-						<td>Background color:</td>
-						<td align="right"># <input type="text" class="picker" data-type="menu_background"></input></td>
-					</tr>
-					<tr>
-						<td>Opacity:</td><td align="center"><a href="#" class="set_menu_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="menu_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_menu_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-				</table>
-				<select class="form-control" id="menu_change_font">
-					<option value="0">Select font</option>
-					<option value="Georgia, serif">Georgia</option>
-					<option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino</option>
-					<option value="'Times New Roman', Times, serif">Times New Roman</option>
-					<option value="Arial, Helvetica, sans-serif">Arial</option>
-					<option value="'Arial Black', Gadget, sans-serif">Arial Black</option>
-					<option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
-					<option value="Impact, Charcoal, sans-serif">Impact</option>
-					<option value="'Lucida Sans Unicode', 'Lucida Grande', sans-serif">Lucida Sans Unicode</option>
-					<option value="Tahoma, Geneva, sans-serif">Tahoma</option>
-					<option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
-					<option value="Verdana, Geneva, sans-serif">Verdana</option>
-					<option value="'Courier New', Courier, monospace">Courier New</option>
-					<option value="'Lucida Console', Monaco, monospace">Lucida Console</option>
-				</select>
-				<table width="100%" style="margin-top:15px;margin-bottom:15px;color:#677888;font-weight:bold;font-size:14px;">
-					<tr>
-						<td>Font color:</td>
-						<td align="right"># <input type="text" class="picker" data-type="menu_font"></input></td>
-					</tr>
-				</table>
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+					</div>
+				</div>
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Style</h3>
+					</div>
+					<div class="panel-body">
+						<a href="#" class="image_edit" style="color:#cc0000;">Select logo</a>
+						<table width="100%" style="margin-top:15px;margin-bottom:15px;color:#677888;font-size:14px;">
+							<tr>
+								<td>Background color:</td>
+								<td align="right"># <input type="text" class="picker" data-type="menu_background"></input></td>
+							</tr>
+							<tr>
+								<td>Opacity:</td><td align="right"><a href="#" class="set_menu_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="menu_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_menu_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+						</table>
+						<select class="form-control" id="menu_change_font">
+							<option value="0">Select font</option>
+							<option value="Georgia, serif">Georgia</option>
+							<option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino</option>
+							<option value="'Times New Roman', Times, serif">Times New Roman</option>
+							<option value="Arial, Helvetica, sans-serif">Arial</option>
+							<option value="'Arial Black', Gadget, sans-serif">Arial Black</option>
+							<option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
+							<option value="Impact, Charcoal, sans-serif">Impact</option>
+							<option value="'Lucida Sans Unicode', 'Lucida Grande', sans-serif">Lucida Sans Unicode</option>
+							<option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+							<option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
+							<option value="Verdana, Geneva, sans-serif">Verdana</option>
+							<option value="'Courier New', Courier, monospace">Courier New</option>
+							<option value="'Lucida Console', Monaco, monospace">Lucida Console</option>
+						</select>
+						<table width="100%" style="margin-top:15px;color:#677888;font-size:14px;">
+							<tr>
+								<td>Font color:</td>
+								<td align="right"># <input type="text" class="picker" data-type="menu_font"></input></td>
+							</tr>
+						</table>
+					</div>
+				</div>
 				<div class="input-group" style="margin-bottom:10px;">
 					<input type="text" id="button_name" class="form-control" placeholder="New button">
 					<span class="input-group-btn">
 			    		<button class="btn btn-default add_menu" type="button">Add</button>
 			    	</span>
 			    </div>
-				<div id="sortable" style="margin-top:10px;color:#677888;font-weight:bold;font-size:14px;"></div>
+				<div id="sortable" style="margin-top:10px;color:#CCC;font-weight:bold;font-size:14px;"></div>
 			</div>
 			<div id="section_settings" style="display:none;">
-				<a href="#" class="image_edit" style="color:#cc0000;">Background image</a>
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+					</div>
+				</div>
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Style</h3>
+					</div>
+					<div class="panel-body">
+						<a href="#" class="image_edit" style="color:#cc0000;">Background image</a>
+						<table width="100%" style="margin-top:15px;margin-bottom:15px;color:#677888;font-size:14px;">
+							<tr>
+								<td>Background color:</td>
+								<td align="right"># <input type="text" class="picker" data-type="section_background"></input></td>
+							</tr>
+							<tr>
+								<td>Opacity:</td><td align="right"><a href="#" class="set_section_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="section_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_section_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+						</table>
+						<a href="#" class="remove_background" style="color:#cc0000;">Delete background</a>
+					</div>
+				</div>
 				<div class="input-group" style="margin-top:10px;">
 					<input type="text" id="section_id" class="form-control" placeholder="Section ID">
 					<span class="input-group-btn">
 			    		<button class="btn btn-default add_id" type="button">Save</button>
 			    	</span>
 			    </div>
-				<table width="100%" style="margin-top:15px;margin-bottom:15px;color:#677888;font-weight:bold;font-size:14px;">
-					<tr>
-						<td>Background color:</td>
-						<td align="right"># <input type="text" class="picker" data-type="section_background"></input></td>
-					</tr>
-					<tr>
-						<td>Opacity:</td><td align="center"><a href="#" class="set_section_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="section_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_section_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
-					</tr>
-				</table>
-				<a href="#" class="remove_background" style="color:#cc0000;">Delete background</a>
 			</div>
 		</div>
 		<div id="add_menu" style="width:300px;height:100%;overflow:scroll;padding:10px;position:fixed;left:80px;float:left;background-color:#FFF;border-left:5px solid #ffcc00;box-shadow:5px 0px 5px 0px rgba(0,0,0,0.2);display:none;">

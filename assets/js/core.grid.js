@@ -121,7 +121,7 @@ function set_column(value){
 	if(value==1){
 		return '';
 	} else {
-		return 'Customize:<br /><iframe src="'+get_stylesheet_directory_uri+'/assets/column_settings.php?id='+value+'" width="240" height="40" style="border:none;margin:4px;"></iframe>';
+		return 'Customize<br /><iframe src="'+get_stylesheet_directory_uri+'/assets/column_settings.php?id='+value+'" width="240" height="40" style="border:none;margin:4px;"></iframe>';
 	}
 }
 function remove_grid_background(){
