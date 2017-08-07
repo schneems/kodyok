@@ -19,6 +19,7 @@ $(document).ready(function(){
 		} else if($(active_element).hasClass('slider')){
 			get_slider_settings();
     		$('#slider_settings',window.parent.document).show();
+    		$('#slider_settings > h3',window.parent.document).hide();
 		}
 		$('#top_margin',window.parent.document).val($(active_element).css('margin-top'));
 		$('#bottom_margin',window.parent.document).val($(active_element).css('margin-bottom'));

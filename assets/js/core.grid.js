@@ -1,5 +1,4 @@
 $(document).ready(function(){
-	
 	$('body').on('click','.column_settings',function(){
 		active_element = $(this).parent().parent();
 		$('#iframe',window.parent.document).css('width',$('#all_content',window.parent.document).width()-380);

@@ -159,6 +159,9 @@ if(isset($_GET['do'])){
     } else if($_GET['do']=='update_email'){
     	update_option('form_email',$_GET['email']);
     	exit;
+    } else if($_GET['do']=='save_seo'){
+    	add_post_meta($_GET['id'],'seo_settings',$_POST['seo_settings'],true);
+    	exit;
     }
 }
 add_action('admin_footer','kodyok_button');

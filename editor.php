@@ -389,6 +389,25 @@ if(isset($_GET['p'])){
 			$('#iframe').css('width',$('#all_content').width()-80);
 			$('#settings_menu').hide();
 		});
+		$("body").on("click",".set_slider_height",function(){
+			slider_height = $('#design_area')[0].contentWindow.set_slider_height($(this).attr('rel'));
+			$('#slider_height').val(slider_height);
+		});
+		$("#save_seo").click(function(){
+			seo_settings = {};
+			seo_settings["title"] = $("#seo_title").val();
+			seo_settings["keywords"] = $("#seo_keywords").val();
+			seo_settings["description"] = $("#seo_description").val();
+			$.ajax({
+				type: "POST",
+				url: "<?php echo get_site_url();?>/?do=save_seo&id=<?php echo $id;?>",
+				data: {seo_settings:JSON.stringify(seo_settings)},
+				success: function(html){
+					alert('Success');
+				}
+			});
+			return false;
+		});
 	});
 	function load_add_section_drag(){
 		$(".add_section").draggable({
@@ -411,10 +430,20 @@ if(isset($_GET['p'])){
 				section_name = $(this).attr('data-section-name');
 				$.get("<?php echo get_stylesheet_directory_uri();?>/sections/"+section_name+".html",function(data){
 					data = data.replace(/PATH/g,"<?php echo get_stylesheet_directory_uri();?>");
+					if(section_name=='slider'){
+						id = 1;
+						$("#design_area").contents().find('.slider').each(function(){
+							slider_tag_id = $(this).children('.carousel').attr('id').split('_');
+							if(slider_tag_id[1]>=id){
+								id = parseInt(slider_tag_id[1])+1;
+							}
+						});
+						data = data.replace(/slider_ID/g,'slider_'+id);
+					}
 					$('#design_area').contents().find('.add_section').replaceWith(data);
 					$('#design_area')[0].contentWindow.load_element_panel();
 					load_add_item_drag();
-					if(section_name == 'blog'){
+					if(section_name=='blog'){
 						$('#contentModal').modal('show');
 					}
 				});
@@ -459,7 +488,7 @@ if(isset($_GET['p'])){
 					$("#design_area").contents().find('.slider').each(function(){
 						slider_tag_id = $(this).children('.carousel').attr('id').split('_');
 						if(slider_tag_id[1]>=id){
-							id = slider_tag_id[1]+1;
+							id = parseInt(slider_tag_id[1])+1;
 						}
 					});
 					$('#design_area').contents().find('.add_item').replaceWith('<div class="element slider"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div><div id="slider_'+id+'" class="carousel slide" data-ride="carousel" data-interval="false" style="min-height:100px;"><ol class="carousel-indicators"></ol><div class="carousel-inner" role="listbox"></div><a class="left carousel-control" href="#slider_'+id+'" role="button" data-slide="prev"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#slider_'+id+'" role="button" data-slide="next"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a></div></div>');
@@ -531,6 +560,7 @@ if(isset($_GET['p'])){
 		<div style="width:80px;height:100%;float:left;background-color:#243343;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;">
 			<div class="open_window left_menu_icon" style="margin-top:20px;margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="#" rel="add" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-plus" style="font-size:26px;margin-bottom:10px;"></span><br /><span>Add</span></a></div>
 			<div id="menu" class="left_menu_icon" style="margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="#" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-bars" style="font-size:26px;margin-bottom:10px;"></span><br /><span>Menu</span></a></div>
+			<div class="left_menu_icon" style="margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="#" data-toggle="modal" data-target="#seoModal" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-search" style="font-size:26px;margin-bottom:10px;"></span><br /><span>SEO</span></a></div>
 			<div id="save" class="left_menu_icon" style="margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="#" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-floppy-o" style="font-size:26px;margin-bottom:10px;"></span><br /><span>Save</span></a></div>
 			<div class="left_menu_icon" style="margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="<?php echo get_site_url();?>/wp-admin" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-wordpress" style="font-size:26px;margin-bottom:10px;"></span><br /><span>Admin</span></a></div>
 		</div>
@@ -539,12 +569,8 @@ if(isset($_GET['p'])){
 		</div>
 		<div id="settings_menu" style="width:300px;height:100%;position:fixed;float:left;background-color:#243343;padding:10px;display:none;">
 			<div id="margin_settings" style="display:none;">
-				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
-					<div class="panel-heading">
-						<h3 class="panel-title" style="color:#677888;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
-					</div>
-				</div>
-				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+				<h3 class="panel-title" style="color:#677888;border-bottom:2px solid #677888;padding-bottom:10px;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+				<div class="panel panel-default" style="border-radius:0;margin-top:10px;margin-bottom:10px;">
 					<div class="panel-heading">
 						<h3 class="panel-title" style="color:#677888;">Margin</h3>
 					</div>
@@ -585,12 +611,8 @@ if(isset($_GET['p'])){
 				</div>
 			</div>
 			<div id="column_settings" style="display:none;">
-				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
-					<div class="panel-heading">
-						<h3 class="panel-title" style="color:#677888;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
-					</div>
-				</div>
-				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+				<h3 class="panel-title" style="color:#677888;border-bottom:2px solid #677888;padding-bottom:10px;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+				<div class="panel panel-default" style="border-radius:0;margin-top:10px;margin-bottom:10px;">
 					<div class="panel-heading">
 						<h3 class="panel-title" style="color:#677888;">Column</h3>
 					</div>
@@ -661,12 +683,8 @@ if(isset($_GET['p'])){
 			    </div>
 			</div>
 			<div id="form_edit_settings" style="display:none;">
-				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
-					<div class="panel-heading">
-						<h3 class="panel-title" style="color:#677888;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
-					</div>
-				</div>
-				<div class="input-group">
+				<h3 class="panel-title" style="color:#677888;border-bottom:2px solid #677888;padding-bottom:10px;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+				<div class="input-group" style="margin-top:10px;">
 					<input type="text" id="input_name" class="form-control" placeholder="New input">
 					<span class="input-group-btn">
 						<button class="btn btn-default add_form" type="button">Add</button>
@@ -676,6 +694,19 @@ if(isset($_GET['p'])){
 			    <input type="text" id="content_send_button" class="form-control" value="Send" style="display:none;">
 			</div>
 			<div id="slider_settings" style="display:none;">
+				<h3 class="panel-title" style="color:#677888;border-bottom:2px solid #677888;padding-bottom:10px;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+				<div class="panel panel-default" style="border-radius:0;margin-top:10px;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Style</h3>
+					</div>
+					<div class="panel-body">
+						<table width="100%" style="color:#677888;font-size:14px;">
+							<tr>
+								<td>Height:</td><td align="right"><a href="#" class="set_slider_height" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="slider_height" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_slider_height" rel="plus"><span class="fa fa-plus"></span></a></td>
+							</tr>
+						</table>
+					</div>
+				</div>
 				<a href="#" class="image_edit" style="color:#cc0000;">Select image</a><br /><br />
 				<div class="input-group" style="margin-bottom:10px;display:none;">
 					<input type="text" id="slider_caption" class="form-control" placeholder="Slider caption">
@@ -754,12 +785,8 @@ if(isset($_GET['p'])){
 				</div>
 			</div>
 			<div id="menu_settings" style="height:100%;overflow:scroll;display:none;">
-				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
-					<div class="panel-heading">
-						<h3 class="panel-title" style="color:#677888;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
-					</div>
-				</div>
-				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+				<h3 class="panel-title" style="color:#677888;border-bottom:2px solid #677888;padding-bottom:10px;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+				<div class="panel panel-default" style="border-radius:0;margin-top:10px;margin-bottom:10px;">
 					<div class="panel-heading">
 						<h3 class="panel-title" style="color:#677888;">Style</h3>
 					</div>
@@ -807,12 +834,8 @@ if(isset($_GET['p'])){
 				<div id="sortable" style="margin-top:10px;color:#CCC;font-weight:bold;font-size:14px;"></div>
 			</div>
 			<div id="section_settings" style="display:none;">
-				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
-					<div class="panel-heading">
-						<h3 class="panel-title" style="color:#677888;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
-					</div>
-				</div>
-				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+				<h3 class="panel-title" style="color:#677888;border-bottom:2px solid #677888;padding-bottom:10px;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+				<div class="panel panel-default" style="border-radius:0;margin-top:10px;margin-bottom:10px;">
 					<div class="panel-heading">
 						<h3 class="panel-title" style="color:#677888;">Style</h3>
 					</div>
@@ -840,8 +863,8 @@ if(isset($_GET['p'])){
 		</div>
 		<div id="add_menu" style="width:300px;height:100%;overflow:scroll;padding:10px;position:fixed;left:80px;float:left;background-color:#FFF;border-left:5px solid #ffcc00;box-shadow:5px 0px 5px 0px rgba(0,0,0,0.2);display:none;">
 			<select id="add_list" class="form-control" style="margin-bottom:10px;">
-				<option value="ready_made">Ready-made</option>
-				<option value="basic_elements">Basic elements</option>
+				<option value="ready_made">Sections</option>
+				<option value="basic_elements">Elements</option>
 			</select>
 			<div id="ready_made"></div>
 			<div id="basic_elements" style="display:none;">
@@ -916,6 +939,39 @@ if(isset($_GET['p'])){
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
+	if(metadata_exists('post',$id,'seo_settings')){
+		$seo_settings = json_decode(get_post_meta($id,'seo_settings')[0]);
+		$title = $seo_settings->title;
+		$keywords = $seo_settings->keywords;
+		$description = $seo_settings->description;
+	} else {
+		$title = '';
+		$keywords = '';
+		$description = '';
+	}
+	?>
+	<div class="modal fade" id="seoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-group">
+						<input type="text" id="seo_title" class="form-control" placeholder="Title" value="<?php echo $title;?>">
+					</div>
+					<div class="form-group">
+						<input type="text" id="seo_keywords" class="form-control" placeholder="Keywords" value="<?php echo $keywords;?>">
+					</div>
+					<div class="form-group">
+						<textarea class="form-control" rows="3" id="seo_description" placeholder="Description"><?php echo $description;?></textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="save_seo">Save</button>
 				</div>
 			</div>
 		</div>

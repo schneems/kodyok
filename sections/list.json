@@ -8,19 +8,23 @@
             "name": "Intro with background image",
             "file": "intro_with_background_image"
         },
+        "slider_01" : {
+            "name": "Slider",
+            "file": "slider"
+        },
         "content_01" : {
             "name": "Services",
             "file": "services"
         },
-        "dynamic_01" : {
+        "content_02" : {
             "name": "Portfolio",
             "file": "portfolio"
         },
-        "dynamic_02" : {
+        "dynamic_01" : {
             "name": "Blog",
             "file": "blog"
         },
-        "content_02" : {
+        "content_03" : {
             "name": "Team",
             "file": "team"
         },

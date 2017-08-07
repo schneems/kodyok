@@ -24,7 +24,21 @@ if(!$menu_exists){
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Kodyok</title>
+    <?php
+    if(metadata_exists('post',get_the_ID(),'seo_settings')){
+        $seo_settings = json_decode(get_post_meta(get_the_ID(),'seo_settings')[0]);
+        $title = $seo_settings->title;
+        $keywords = $seo_settings->keywords;
+        $description = $seo_settings->description;
+    } else {
+        $title = '';
+        $keywords = '';
+        $description = '';
+    }
+    ?>
+    <title><?php echo $title;?></title>
+    <meta name="keywords" content="<?php echo $keywords;?>" />
+    <meta name="description" content="<?php echo $description;?>" />
     <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/bootstrap/css/bootstrap-theme.min.css">
     <script src="<?php echo get_stylesheet_directory_uri();?>/assets/js/jquery-1.12.0.min.js"></script>
