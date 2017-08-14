@@ -154,7 +154,7 @@ if(isset($_GET['p'])){
 		});
 		$("#button_change_font").change(function(){
 			if($("#button_change_font").val()!=0){
-				$('#design_area')[0].contentWindow.set_button_font($("#button_change_font").val());
+				$('#design_area')[0].contentWindow.set_button_font($("#button_change_font").val(),$("#button_change_font > option:selected").text());
 			}
 		});
 		$("#button_change_size").change(function(){
@@ -195,8 +195,14 @@ if(isset($_GET['p'])){
 		});
 		$("#menu_change_font").change(function(){
 			if($("#menu_change_font").val()!=0){
-				$('#design_area')[0].contentWindow.set_menu_font($("#menu_change_font").val());
+				$('#design_area')[0].contentWindow.set_menu_font($("#menu_change_font").val(),$("#menu_change_font > option:selected").text());
 			}
+		});
+		$("body").on("click","#menu_change_font",function(){
+			$('#design_area')[0].contentWindow.get_font_list();
+		});
+		$("body").on("click","#button_change_font",function(){
+			$('#design_area')[0].contentWindow.get_font_list();
 		});
 		$("body").on("click",".set_menu_opacity",function(){
 			opacity_value = $('#design_area')[0].contentWindow.set_menu_opacity($(this).attr('rel'));
@@ -481,7 +487,7 @@ if(isset($_GET['p'])){
 					$('#design_area')[0].contentWindow.select_active_icon();
 				} else if($(this).attr('data-item')=='image'){
 					$('#design_area').contents().find('.add_item').replaceWith('<div class="element image"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/blank.gif" class="img-responsive" /></a></div>');
-					$('#imageModal').modal('show');
+					image_edit();
 					$('#design_area')[0].contentWindow.select_active_element();
 				} else if($(this).attr('data-item')=='slider'){
 					id = 1;
@@ -505,7 +511,7 @@ if(isset($_GET['p'])){
 			opacity:0.5,
 			tolerance:'pointer',
 			placeholder:'place_holder',
-			cancel:'.text > .editable[contenteditable=true],input',
+			cancel:'.text > .editable[contenteditable=true],input,.ui-resizable-handle',
 			start:function(event,ui){
 				$('#design_area').contents().find('.grid').css('padding-top','5px');
 				$('#design_area').contents().find('.grid').css('padding-bottom','5px');
@@ -554,8 +560,9 @@ if(isset($_GET['p'])){
 		.picker { margin:0;padding:0;border:0;width:70px;height:20px;border-right:20px solid green;line-height:20px;}
         .left_menu_icon:hover > a > span { color:#00ccff;}
 	</style>
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Saira" media="all">
 </head>
-<body>
+<body style="font-family:'Saira', sans-serif;">
 	<div id="all_content" style="width:100%;height:100%;">
 		<div style="width:80px;height:100%;float:left;background-color:#243343;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;">
 			<div class="open_window left_menu_icon" style="margin-top:20px;margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="#" rel="add" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-plus" style="font-size:26px;margin-bottom:10px;"></span><br /><span>Add</span></a></div>
@@ -707,15 +714,20 @@ if(isset($_GET['p'])){
 						</table>
 					</div>
 				</div>
-				<a href="#" class="image_edit" style="color:#cc0000;">Select image</a><br /><br />
-				<div class="input-group" style="margin-bottom:10px;display:none;">
-					<input type="text" id="slider_caption" class="form-control" placeholder="Slider caption">
-			    	<span class="input-group-btn">
-			    		<button class="btn btn-default add_slider" type="button">Add</button>
-			    	</span>
-			    </div>
-			    <div style="max-height:300px;overflow:scroll;">
-					<div id="slider_content" style="margin-top:10px;"></div>
+				<div class="panel panel-default" style="border-radius:0;margin-top:10px;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Content</h3>
+					</div>
+					<div class="panel-body">
+						<button class="btn btn-default btn-block image_edit" type="button">Add image</button>
+						<div class="input-group" style="margin-bottom:10px;display:none;">
+							<input type="text" id="slider_caption" class="form-control" placeholder="Slider caption">
+					    	<span class="input-group-btn">
+					    		<button class="btn btn-default add_slider" type="button">Add</button>
+					    	</span>
+					    </div>
+					    <div id="slider_content" style="margin-top:10px;font-weight:bold;font-size:14px;"></div>
+					</div>
 				</div>
 		    </div>
 		    <div id="button_settings" style="display:none;">
@@ -737,19 +749,6 @@ if(isset($_GET['p'])){
 						</table>
 						<select class="form-control" id="button_change_font" style="width:50%;float:left;">
 							<option value="0">Select font</option>
-							<option value="Georgia, serif">Georgia</option>
-							<option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino</option>
-							<option value="'Times New Roman', Times, serif">Times New Roman</option>
-							<option value="Arial, Helvetica, sans-serif">Arial</option>
-							<option value="'Arial Black', Gadget, sans-serif">Arial Black</option>
-							<option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
-							<option value="Impact, Charcoal, sans-serif">Impact</option>
-							<option value="'Lucida Sans Unicode', 'Lucida Grande', sans-serif">Lucida Sans Unicode</option>
-							<option value="Tahoma, Geneva, sans-serif">Tahoma</option>
-							<option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
-							<option value="Verdana, Geneva, sans-serif">Verdana</option>
-							<option value="'Courier New', Courier, monospace">Courier New</option>
-							<option value="'Lucida Console', Monaco, monospace">Lucida Console</option>
 						</select>
 						<select class="form-control" id="button_change_size" style="width:50%;">
 							<option value="0">Size</option>
@@ -803,19 +802,6 @@ if(isset($_GET['p'])){
 						</table>
 						<select class="form-control" id="menu_change_font">
 							<option value="0">Select font</option>
-							<option value="Georgia, serif">Georgia</option>
-							<option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino</option>
-							<option value="'Times New Roman', Times, serif">Times New Roman</option>
-							<option value="Arial, Helvetica, sans-serif">Arial</option>
-							<option value="'Arial Black', Gadget, sans-serif">Arial Black</option>
-							<option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
-							<option value="Impact, Charcoal, sans-serif">Impact</option>
-							<option value="'Lucida Sans Unicode', 'Lucida Grande', sans-serif">Lucida Sans Unicode</option>
-							<option value="Tahoma, Geneva, sans-serif">Tahoma</option>
-							<option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
-							<option value="Verdana, Geneva, sans-serif">Verdana</option>
-							<option value="'Courier New', Courier, monospace">Courier New</option>
-							<option value="'Lucida Console', Monaco, monospace">Lucida Console</option>
 						</select>
 						<table width="100%" style="margin-top:15px;color:#677888;font-size:14px;">
 							<tr>
@@ -825,13 +811,20 @@ if(isset($_GET['p'])){
 						</table>
 					</div>
 				</div>
-				<div class="input-group" style="margin-bottom:10px;">
-					<input type="text" id="button_name" class="form-control" placeholder="New button">
-					<span class="input-group-btn">
-			    		<button class="btn btn-default add_menu" type="button">Add</button>
-			    	</span>
-			    </div>
-				<div id="sortable" style="margin-top:10px;color:#CCC;font-weight:bold;font-size:14px;"></div>
+				<div class="panel panel-default" style="border-radius:0;margin-top:10px;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Content</h3>
+					</div>
+					<div class="panel-body">
+						<div class="input-group" style="margin-bottom:10px;">
+							<input type="text" id="button_name" class="form-control" placeholder="New button">
+							<span class="input-group-btn">
+					    		<button class="btn btn-default add_menu" type="button">Add</button>
+					    	</span>
+					    </div>
+						<div id="sortable" style="margin-top:10px;font-weight:bold;font-size:14px;"></div>
+					</div>
+				</div>
 			</div>
 			<div id="section_settings" style="display:none;">
 				<h3 class="panel-title" style="color:#677888;border-bottom:2px solid #677888;padding-bottom:10px;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
@@ -1036,6 +1029,9 @@ if(isset($_GET['p'])){
 		</div>
 		<button type="button" class="btn btn-default set_link_settings">
 			<span class="fa fa-link" style="font-size:20px;"></span>
+		</button>
+		<button type="button" class="btn btn-default image_edit">
+			<span class="fa fa-picture-o" style="font-size:20px;"></span>
 		</button>
 		<div class="btn-group">
 			<button type="button" class="btn btn-default set_font_settings">Select font</button>

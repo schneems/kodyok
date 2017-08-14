@@ -4,7 +4,12 @@ function change_menu_background(value){
 function change_menu_font(value){
 	$('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('color',value);
 }
-function set_menu_font(value){
+function set_menu_font(value,font_name){
+	WebFont.load({
+		google: {
+			families: [font_name]
+		}
+	});
 	$('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('font-family',value);
 }
 function set_menu_opacity(value){
@@ -68,6 +73,8 @@ function add_menu(value){
 			next_item_id = $('#sortable',window.parent.document).children().length;
 			$.get(get_site_url+"/?do=add_menu_item&title="+button_name+"&position="+(next_item_id+1)+"&menu_id="+$('nav').children('.container').children('.collapse').children('.nav').attr('data-menu-id'),function(data){
 				$('nav').children('.container').children('.collapse').children('.nav').append('<li data-item-id="'+parseInt(data)+'" data-position="'+(next_item_id+1)+'"><a href="#">'+button_name+'</a></li>');
+				$('nav').children('.container').children('.collapse').children('.nav').children('li').last().children('a').css('font-family',$('nav').children('.container').children('.collapse').children('.nav').children('li').first().children('a').css('font-family'));
+				$('nav').children('.container').children('.collapse').children('.nav').children('li').last().children('a').css('color',$('nav').children('.container').children('.collapse').children('.nav').children('li').first().children('a').css('color'));
 			});
 			$('#sortable',window.parent.document).append('<div id="content_menu_'+next_item_id+'" style="border:1px solid #677888;padding:10px;"><span class="fa fa-sort" style="font-size:18px;margin-right:10px;"></span>'+button_name+'<span class="fa fa-link menu_link" data-href="#" style="font-size:18px;margin-left:10px;"></span><span class="fa fa-pencil menu_edit_item" style="font-size:18px;margin-left:10px;"></span><span class="fa fa-trash remove_menu" style="font-size:18px;margin-left:10px;"></span></div>');
 		} else if($('.add_menu',window.parent.document).html()=='Save'){

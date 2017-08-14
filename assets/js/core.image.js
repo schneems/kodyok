@@ -57,8 +57,22 @@ function update_image(selected_image,id){
 		} else {
 			$(active_element).children('a').children('img').attr('src',selected_image);
 		}
+		img = new Image();
+		img.onload = function(){
+			$(active_element).css('max-width',this.width);
+			$(active_element).css('max-height',this.height);
+			image_resizable();
+		}
+		img.src = selected_image;
 	} else if($(active_element).hasClass('slider')){
 		add_slider(selected_image);
+	} else if($(active_element).hasClass('text')){
+		img = new Image();
+		img.onload = function(){
+			document.execCommand("insertHTML", false, '<div class="element image image_in_text" style="max-width:'+this.width+'px;max-height:'+this.height+'px;margin:auto;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="'+selected_image+'" class="img-responsive" /></a></div>');
+			image_resizable();
+		}
+		img.src = selected_image;
 	}
 }
 function remove_last_image(){
@@ -85,4 +99,9 @@ function set_shape(value){
 	} else if(value=='square'){
 		$(active_element).find('a > img').removeClass('img-circle');
 	}
+}
+function image_resizable(){
+	$(".image").resizable({
+		aspectRatio: true
+	});
 }

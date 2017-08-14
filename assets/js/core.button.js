@@ -81,7 +81,12 @@ function change_button_font(value){
 function change_button_border(value){
 	$(active_element).children('a').css('border-color',value);
 }
-function set_button_font(value){
+function set_button_font(value,font_name){
+	WebFont.load({
+		google: {
+			families: [font_name]
+		}
+	});
 	$(active_element).children('a').css('font-family',value);
 }
 function set_button_size(value){

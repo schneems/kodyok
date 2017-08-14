@@ -47,6 +47,47 @@ if(!$menu_exists){
     <link type="text/css" href="<?php echo get_stylesheet_directory_uri();?>/assets/css/jquery-ui.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/font-awesome/css/font-awesome.min.css">
     <link href="<?php echo get_stylesheet_directory_uri();?>/assets/lightbox2/css/lightbox.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Saira" media="all">
+    <script type="text/javascript">
+        get_stylesheet_directory_uri = '<?php echo get_stylesheet_directory_uri();?>';
+        get_site_url = '<?php echo get_site_url();?>';
+        loaded_fonts = [];
+        $(document).ready(function(){
+            if($('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('font-family')){
+                if(loaded_fonts.indexOf($('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('font-family').split(',')[0].replace(/"/g,''))=='-1'){
+                    loaded_fonts.push($('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('font-family').split(',')[0].replace(/"/g,''));
+                    WebFont.load({
+                        google: {
+                            families: [$('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('font-family').split(',')[0].replace(/"/g,'')]
+                        }
+                    });
+                }
+            }
+            $('.button').children('a').each(function(){
+                if(loaded_fonts.indexOf($(this).css('font-family').split(',')[0].replace(/"/g,''))=='-1'){
+                    loaded_fonts.push($(this).css('font-family').split(',')[0].replace(/"/g,''));
+                    WebFont.load({
+                        google: {
+                            families: [$(this).css('font-family').split(',')[0].replace(/"/g,'')]
+                        }
+                    });
+                }
+            });
+            $('.main_sortable').find('font').each(function(){
+                if($(this).attr('face')){
+                    if(loaded_fonts.indexOf($(this).attr('face').split(',')[0])=='-1'){
+                        loaded_fonts.push($(this).attr('face').split(',')[0]);
+                        WebFont.load({
+                            google: {
+                                families: [$(this).attr('face').split(',')[0]]
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    </script>
     <?php
     if(isset($_GET['editor'])){
     ?>
@@ -57,7 +98,7 @@ if(!$menu_exists){
         get_site_url = '<?php echo get_site_url();?>';
         $(document).ready(function(){
             $("body").on("click","a",function(e){
-                if($(this).attr('href')[0]!='#' && $(this).attr('target')!='_blank'){
+                if($(this).attr('href')[0]!='#' && $(this).attr('target')!='_blank' && !$(this).attr('data-lightbox')){
                     e.preventDefault();
                     window.open($(this).attr('href')+'?kodyok','_top');
                 }
@@ -112,7 +153,7 @@ if(!$menu_exists){
         });
     </script>
 </head>
-<body style="margin:0;padding:0;">
+<body style="margin:0;padding:0;font-family:'Saira', sans-serif;">
     <?php
     if(get_option('menu_style')){
         $menu_style = json_decode(get_option('menu_style'));

@@ -63,7 +63,7 @@ $(document).ready(function(){
 		}
 		$(this).children('.element_panel').css('width',$(this).css('width'));
 		if($(this).hasClass('text')){
-			if($(this).children('.editable').is(":focus")){
+			if($(this).children('.element_panel').children('.text_edit_done').css('display')!='none'){
 				$('.editor').css('display','');
 			}
 		}
@@ -76,9 +76,7 @@ $(document).ready(function(){
 			$(this).css('box-shadow','');
 		}
 		if($(this).hasClass('text')){
-			if($(this).children('.editable').is(":focus")){
-				$('.editor').css('display','none');
-			}
+			$('.editor').css('display','none');
 		}
 	});
 	load_element_panel();
@@ -200,15 +198,31 @@ function set_align(value){
 			$(active_element).css('text-align','right');
 		}
 	} else if($(active_element).hasClass('image')){
-		if(value=='center'){
-			$(active_element).children('a').children('img').css('margin-left','auto');
-			$(active_element).children('a').children('img').css('margin-right','auto');
-		} else if(value=='left'){
-			$(active_element).children('a').children('img').css('margin-left','0');
-			$(active_element).children('a').children('img').css('margin-right','auto');
-		} else if(value=='right'){
-			$(active_element).children('a').children('img').css('margin-left','auto');
-			$(active_element).children('a').children('img').css('margin-right','0');
+		if($(active_element).hasClass('image_in_text')){
+			if(value=='center'){
+				$(active_element).css('margin','auto');
+				element_style = $(active_element).attr('style');
+				element_style = element_style.replace('float: left;','');
+				element_style = element_style.replace('float: right;','');
+				$(active_element).attr('style',element_style);
+			} else if(value=='left'){
+				$(active_element).css('margin','0');
+				$(active_element).css('float','left');
+			} else if(value=='right'){
+				$(active_element).css('margin','0');
+				$(active_element).css('float','right');
+			}
+		} else {
+			if(value=='center'){
+				$(active_element).css('margin-left','auto');
+				$(active_element).css('margin-right','auto');
+			} else if(value=='left'){
+				$(active_element).css('margin-left','0');
+				$(active_element).css('margin-right','auto');
+			} else if(value=='right'){
+				$(active_element).css('margin-left','auto');
+				$(active_element).css('margin-right','0');
+			}
 		}
 	}
 }
