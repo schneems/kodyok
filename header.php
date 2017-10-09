@@ -41,11 +41,12 @@ if(!$menu_exists){
     <meta name="description" content="<?php echo $description;?>" />
     <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/bootstrap/css/bootstrap-theme.min.css">
-    <script src="<?php echo get_stylesheet_directory_uri();?>/assets/js/jquery-1.12.0.min.js"></script>
+    <script src="<?php echo get_stylesheet_directory_uri();?>/assets/js/jquery.min.js"></script>
     <script src="<?php echo get_stylesheet_directory_uri();?>/assets/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/jquery-ui.min.js"></script>
     <link type="text/css" href="<?php echo get_stylesheet_directory_uri();?>/assets/css/jquery-ui.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/style.css">
     <link href="<?php echo get_stylesheet_directory_uri();?>/assets/lightbox2/css/lightbox.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Saira" media="all">
@@ -74,7 +75,7 @@ if(!$menu_exists){
                     });
                 }
             });
-            $('.main_sortable').find('font').each(function(){
+            $('#content_area').find('font').each(function(){
                 if($(this).attr('face')){
                     if(loaded_fonts.indexOf($(this).attr('face').split(',')[0])=='-1'){
                         loaded_fonts.push($(this).attr('face').split(',')[0]);
@@ -116,7 +117,7 @@ if(!$menu_exists){
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/core.slider.js"></script>
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/core.text.js"></script>
     <style type="text/css">
-        .place_holder { width:100%;height:20px;background:#ddd;margin-top:10px;margin-bottom:10px;}
+        .place_holder { width:100%;height:10px;background:#00ccff;margin-top:10px;margin-bottom:10px;}
     </style>
     <?php
     } else {
@@ -193,4 +194,4 @@ if(!$menu_exists){
             </div>
         </div>
     </nav>
-    <div class="main_sortable" style="height:100%;">
+    <div id="content_area">

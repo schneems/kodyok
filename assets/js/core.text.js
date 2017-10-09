@@ -86,16 +86,20 @@ $(document).ready(function(){
 		get_text_settings();
 	});
 	$(window).scroll(function(){
-		if($('.editable[contenteditable=true]').height()>$(window).height()){
-			if($(window).scrollTop()>=$(".editable[contenteditable=true]").offset().top){
+		if($('.editable[contenteditable=true]').height()>$(window.parent.document).height()){
+			if($(window).scrollTop()>$(".editable[contenteditable=true]").offset().top){
 				$('.editor').css('position','fixed');
 				$('.editor').css('top','0');
 				$('.editor').css('margin-top','0');
 			} else {
 				$('.editor').css('position','absolute');
-				$('.editor').css('top',$(".editable[contenteditable=true]").offset().top+'px');
+				$('.editor').css('top','auto');
 				$('.editor').css('margin-top','-'+($('.editor').height()+10));
 			}
+		} else {
+			$('.editor').css('position','absolute');
+			$('.editor').css('top','auto');
+			$('.editor').css('margin-top','-'+($('.editor').height()+10));
 		}
 	});
 });
@@ -116,23 +120,24 @@ function get_text_settings(){
 		}
 	}
 	$('.editor').css('width',$(active_element).children('.editable').css('width'));
-	$('.editor').css('position','absolute');
-	$('.editor').css('top',$(active_element).children(".editable").offset().top+'px');
-	$('.editor').css('margin-top','-'+($('.editor').height()+10));
 	$(active_element).children('.editable').css('outline','none');
 	if($('.editor').css('display')=='none'){
 		$('.editor').css('display','');
 	}
-	if($(active_element).children('.editable').height()>$(window).height()){
+	if($(active_element).children('.editable').height()>$(window.parent.document).height()){
 		if($(window).scrollTop()>$(active_element).children('.editable').offset().top){
 			$('.editor').css('position','fixed');
 			$('.editor').css('top','0');
 			$('.editor').css('margin-top','0');
 		} else {
 			$('.editor').css('position','absolute');
-			$('.editor').css('top',$(active_element).children(".editable").offset().top+'px');
+			$('.editor').css('top','auto');
 			$('.editor').css('margin-top','-'+($('.editor').height()+10));
 		}
+	} else {
+		$('.editor').css('position','absolute');
+		$('.editor').css('top','auto');
+		$('.editor').css('margin-top','-'+($('.editor').height()+10));
 	}
 	$('.set_color').colpick({
 		layout:'hex',

@@ -1,6 +1,6 @@
 <html>
 <head>
-  <script src="js/jquery-1.12.0.min.js"></script>
+  <script src="js/jquery.min.js"></script>
   <script type="text/javascript" src="js/jquery-ui.min.js"></script>
   <link type="text/css" href="css/jquery-ui.min.css" rel="stylesheet" />
   <meta charset="utf-8">

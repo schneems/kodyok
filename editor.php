@@ -11,13 +11,16 @@ if(isset($_GET['p'])){
 	<title>Kodyok</title>
 	<link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/bootstrap/css/bootstrap-theme.min.css">
-	<script src="<?php echo get_stylesheet_directory_uri();?>/assets/js/jquery-1.12.0.min.js"></script>
+	<script src="<?php echo get_stylesheet_directory_uri();?>/assets/js/jquery.min.js"></script>
+	<script src="<?php echo get_stylesheet_directory_uri();?>/assets/js/Sortable.min.js"></script>
 	<script src="<?php echo get_stylesheet_directory_uri();?>/assets/bootstrap/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/jquery-ui.min.js"></script>
 	<link type="text/css" href="<?php echo get_stylesheet_directory_uri();?>/assets/css/jquery-ui.min.css" rel="stylesheet" />
 	<script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/colpick.js"></script>
     <link href="<?php echo get_stylesheet_directory_uri();?>/assets/css/colpick.css" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/font-awesome/css/font-awesome.min.css">
+	<script src="<?php echo get_stylesheet_directory_uri();?>/assets/swal/sweetalert.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet_directory_uri();?>/assets/swal/sweetalert.css">
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$('#iframe').css('width',$('#all_content').width()-80);
@@ -37,10 +40,15 @@ if(isset($_GET['p'])){
 			menu_style["color"] = $("#design_area").contents().find('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('color');
 			menu_style["bgcolor"] = $("#design_area").contents().find('nav').css('background-color');
 			menu_style["logo"] = $("#design_area").contents().find('nav').children('.container').children('.navbar-header').children('.navbar-brand').children('img').attr('src');
+			if($("#design_area").contents().find('#post_content_area').length==1){
+				content_html = $("#design_area").contents().find('#post_content_area').html();
+			} else {
+				content_html = $("#design_area").contents().find('#content_area').html();
+			}
 			$.ajax({
 				type: "POST",
 				url: "<?php echo get_site_url();?>/?do=save&id=<?php echo $id;?>",
-				data: {content:$("#design_area").contents().find('.main_sortable').html(),menu:JSON.stringify(menu_style)},
+				data: {content:content_html,menu:JSON.stringify(menu_style),footer:$("#design_area").contents().find('footer').children('.container').html()},
 				success: function(html){
 					alert('Success');
 					$('#design_area')[0].contentWindow.run_after_save();
@@ -416,27 +424,35 @@ if(isset($_GET['p'])){
 		});
 	});
 	function load_add_section_drag(){
-		$(".add_section").draggable({
-			connectToSortable: $('#design_area').contents().find(".main_sortable").sortable({
-				opacity:0.5,
-				tolerance:'pointer',
-				placeholder:'place_holder',
-				cancel:'*'
-			}),
-			helper: "clone",
-			appendTo: "body",
-			iframeFix: true,
-			start:function(e,ui){
+		Sortable.create(document.getElementById('ready_made'), {
+		    group: { name: "section-sortable", pull: "clone", put: false },
+		    ghostClass: "place_holder",
+		    sort: false,
+		    onChoose: function (evt) {
+		    	active_section = $(evt.item).attr('data-section-name');
+		    },
+		    onStart: function (evt) {
 				$('#add_menu').css('display','none');
 				$('.open_window').addClass('left_menu_icon');
 				$('.open_window').css('background-color','');
 				$('.open_window > a').css('color','#677888');
+				$('#design_area').contents().find('#content_area').prepend('<div class="blank_section"><div class="container section_placeholder" style="min-height:50px;font-size:40px;text-align:center;">DROP HERE</div></div>');
+				$('<div class="blank_section"><div class="container section_placeholder" style="min-height:50px;font-size:40px;text-align:center;">DROP HERE</div></div>').insertAfter($('#design_area').contents().find('section'));
+				sortable_id = 0;
+				$("#design_area").contents().find('.section_placeholder').each(function(){
+					Sortable.create(document.getElementById('design_area').contentWindow.document.getElementsByClassName('section_placeholder')[sortable_id], {
+					    group: "section-sortable",
+					    filter: "div",
+					    preventOnFilter: false,
+					    ghostClass: "place_holder"
+					});
+					sortable_id++;
+				});
 			},
-			stop:function(e,ui){
-				section_name = $(this).attr('data-section-name');
-				$.get("<?php echo get_stylesheet_directory_uri();?>/sections/"+section_name+".html",function(data){
+			onEnd: function (evt) {
+				$.get("<?php echo get_stylesheet_directory_uri();?>/sections/"+active_section+".html",function(data){
 					data = data.replace(/PATH/g,"<?php echo get_stylesheet_directory_uri();?>");
-					if(section_name=='slider'){
+					if(active_section=='slider'){
 						id = 1;
 						$("#design_area").contents().find('.slider').each(function(){
 							slider_tag_id = $(this).children('.carousel').attr('id').split('_');
@@ -446,25 +462,34 @@ if(isset($_GET['p'])){
 						});
 						data = data.replace(/slider_ID/g,'slider_'+id);
 					}
-					$('#design_area').contents().find('.add_section').replaceWith(data);
+					$('#design_area').contents().find('.add_section').parent().parent().replaceWith(data);
+					$('#design_area').contents().find('.blank_section').remove();
 					$('#design_area')[0].contentWindow.load_element_panel();
 					load_add_item_drag();
-					if(section_name=='blog'){
+					if(active_section=='blog'){
 						$('#contentModal').modal('show');
 					}
 				});
+			},
+		    onMove: function (evt) {
+				$('.place_holder').css('width','100%');
+				$('.place_holder').html('');
+				$("#design_area").contents().find('.place_holder').css('width','100%');
+				$("#design_area").contents().find('.place_holder').html('');
 			}
 		});
 		load_add_item_drag();
 	}
 	function load_add_item_drag(){
 		load_sortable();
-		$(".add_item").draggable({
-			connectToSortable: $('#design_area').contents().find(".sortable"),
-			helper:"clone",
-			appendTo: "body",
-			iframeFix: true,
-			start:function(e,ui){
+		Sortable.create(document.getElementById('basic_elements'), {
+		    group: { name: "element-sortable", pull: "clone", put: false },
+		    ghostClass: "place_holder",
+		    sort: false,
+		    onChoose: function (evt) {
+		    	active_element = $(evt.item).children().attr('data-item');
+		    },
+		    onStart: function (evt) {
 				$('#add_menu').css('display','none');
 				$('.open_window').addClass('left_menu_icon');
 				$('.open_window').css('background-color','');
@@ -472,24 +497,24 @@ if(isset($_GET['p'])){
 				$('#design_area').contents().find('.grid').css('padding-top','5px');
 				$('#design_area').contents().find('.grid').css('padding-bottom','5px');
 			},
-			stop:function(e,ui){
+			onEnd: function (evt) {
 				$('#design_area').contents().find('.grid').css('padding-top','0');
 				$('#design_area').contents().find('.grid').css('padding-bottom','0');
-				if($(this).attr('data-item')=='button'){
-					$('#design_area').contents().find('.add_item').replaceWith('<div class="element button" style="text-align:center;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil button_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link button_link" style="font-size:26px;margin:5px;"></span></div><a href="#" class="btn" style="padding:10px;padding-left:20px;padding-right:20px;background-color:#EEE;color:#000;text-decoration:none;">New button</a></div>');
-				} else if($(this).attr('data-item')=='form'){
-					$('#design_area').contents().find('.add_item').replaceWith('<div class="element form"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil form_edit" style="font-size:26px;margin:5px;"></span></div><div class="form_content"></div><div class="form-group" style="text-align:center;"><a class="btn send_button" style="color:#000;background-color:#EEE;">Send</a></div></div>');
-				} else if($(this).attr('data-item')=='grid'){
-					$('#design_area').contents().find('.add_item').replaceWith('<div class="element grid"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-columns column_settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-plus add_row" style="font-size:26px;margin:5px;"></span><span class="fa fa-minus remove_row" style="font-size:26px;margin:5px;"></span></div><div class="row"><div class="col-md-12 sortable" style="min-height:50px;"></div></div></div>');
-				} else if($(this).attr('data-item')=='icon'){
-					$('#design_area').contents().find('.add_item').replaceWith('<div class="element icon" style="text-align:center;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil icon_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link icon_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><i class="fa fa-font-awesome" aria-hidden="true" style="font-size:50px;"></i></a></div>');
+				if(active_element=='button'){
+					$(evt.item).replaceWith('<div class="element button" style="text-align:center;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil button_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link button_link" style="font-size:26px;margin:5px;"></span></div><a href="#" class="btn" style="padding:10px;padding-left:20px;padding-right:20px;background-color:#EEE;color:#000;text-decoration:none;">New button</a></div>');
+				} else if(active_element=='form'){
+					$(evt.item).replaceWith('<div class="element form"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil form_edit" style="font-size:26px;margin:5px;"></span></div><div class="form_content"></div><div class="form-group" style="text-align:center;"><a class="btn send_button" style="color:#000;background-color:#EEE;">Send</a></div></div>');
+				} else if(active_element=='grid'){
+					$(evt.item).replaceWith('<div class="element grid"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-columns column_settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-plus add_row" style="font-size:26px;margin:5px;"></span><span class="fa fa-minus remove_row" style="font-size:26px;margin:5px;"></span></div><div class="row"><div class="col-md-12 sortable" style="min-height:50px;"></div></div></div>');
+				} else if(active_element=='icon'){
+					$(evt.item).replaceWith('<div class="element icon" style="text-align:center;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil icon_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link icon_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><i class="fa fa-font-awesome" aria-hidden="true" style="font-size:50px;"></i></a></div>');
 					$('#iconModal').modal('show');
 					$('#design_area')[0].contentWindow.select_active_icon();
-				} else if($(this).attr('data-item')=='image'){
-					$('#design_area').contents().find('.add_item').replaceWith('<div class="element image"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/blank.gif" class="img-responsive" /></a></div>');
+				} else if(active_element=='image'){
+					$(evt.item).replaceWith('<div class="element image"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/blank.gif" class="img-responsive" /></a></div>');
 					image_edit();
 					$('#design_area')[0].contentWindow.select_active_element();
-				} else if($(this).attr('data-item')=='slider'){
+				} else if(active_element=='slider'){
 					id = 1;
 					$("#design_area").contents().find('.slider').each(function(){
 						slider_tag_id = $(this).children('.carousel').attr('id').split('_');
@@ -497,29 +522,52 @@ if(isset($_GET['p'])){
 							id = parseInt(slider_tag_id[1])+1;
 						}
 					});
-					$('#design_area').contents().find('.add_item').replaceWith('<div class="element slider"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div><div id="slider_'+id+'" class="carousel slide" data-ride="carousel" data-interval="false" style="min-height:100px;"><ol class="carousel-indicators"></ol><div class="carousel-inner" role="listbox"></div><a class="left carousel-control" href="#slider_'+id+'" role="button" data-slide="prev"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#slider_'+id+'" role="button" data-slide="next"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a></div></div>');
-				} else if($(this).attr('data-item')=='text'){
-					$('#design_area').contents().find('.add_item').replaceWith('<div class="element text"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil text_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-check text_edit_done" style="font-size:26px;margin:5px;display:none;"></span></div><div class="editable" style="text-align:center;font-size:20px;" spellcheck="false">Text.<br />Double click me.</div></div>');
+					$(evt.item).replaceWith('<div class="element slider"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div><div id="slider_'+id+'" class="carousel slide" data-ride="carousel" data-interval="false" style="min-height:100px;"><ol class="carousel-indicators"></ol><div class="carousel-inner" role="listbox"></div><a class="left carousel-control" href="#slider_'+id+'" role="button" data-slide="prev"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#slider_'+id+'" role="button" data-slide="next"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a></div></div>');
+				} else if(active_element=='text'){
+					$(evt.item).replaceWith('<div class="element text"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil text_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-check text_edit_done" style="font-size:26px;margin:5px;display:none;"></span></div><div class="editable" style="text-align:center;font-size:20px;" spellcheck="false">Text.<br />Double click me.</div></div>');
 				}
 				load_sortable();
+			},
+		    onMove: function (evt) {
+				$('.place_holder').css('width','100%');
+				$('.place_holder').html('');
+				$("#design_area").contents().find('.place_holder').css('width','100%');
+				$("#design_area").contents().find('.place_holder').html('');
 			}
 		});
 	}
 	function load_sortable(){
-		$('#design_area').contents().find(".sortable").sortable({
-			connectWith:'.sortable',
-			opacity:0.5,
-			tolerance:'pointer',
-			placeholder:'place_holder',
-			cancel:'.text > .editable[contenteditable=true],input,.ui-resizable-handle',
-			start:function(event,ui){
-				$('#design_area').contents().find('.grid').css('padding-top','5px');
-				$('#design_area').contents().find('.grid').css('padding-bottom','5px');
-			},
-			stop:function(event,ui){
-				$('#design_area').contents().find('.grid').css('padding-top','0');
-				$('#design_area').contents().find('.grid').css('padding-bottom','0');
-			}
+		sortable_id = 0;
+		$("#design_area").contents().find('.sortable').each(function(){
+			Sortable.create(document.getElementById('design_area').contentWindow.document.getElementsByClassName('sortable')[sortable_id], {
+			    group: "element-sortable",
+			    filter: ".text > .editable[contenteditable=true],input,.ui-resizable-handle",
+			    preventOnFilter: false,
+			    ghostClass: "place_holder",
+			    onStart: function (evt) {
+					div_content = $(evt.item).html();
+					$(evt.item).html('');
+					$('#design_area').contents().find('.grid').css('padding-top','5px');
+					$('#design_area').contents().find('.grid').css('padding-bottom','5px');
+				},
+				onEnd: function (evt) {
+					$(evt.item).html(div_content);
+					$('#design_area').contents().find('.grid').css('padding-top','0');
+					$('#design_area').contents().find('.grid').css('padding-bottom','0');
+				},
+				onClone: function (evt) {
+			    	$(evt.item).children('.element_panel').hide();
+			    	if($(evt.item).hasClass('grid')){
+						$(evt.item).children('.row').children('.sortable').css('box-shadow','');
+					} else {
+						$(evt.item).css('box-shadow','');
+					}
+					if($(evt.item).hasClass('text')){
+						$('.editor').css('display','none');
+					}
+				}
+			});
+			sortable_id++;
 		});
 	}
 	function image_edit(){

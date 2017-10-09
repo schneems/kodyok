@@ -1,4 +1,9 @@
 $(document).ready(function(){
+	if($('#post_content_area').length==1){
+		$('#add_list',window.parent.document).hide();
+		$('#ready_made',window.parent.document).hide();
+		$('#basic_elements',window.parent.document).show();
+	}
 	$("body").on("click",".settings",function(){
 		active_element = $(this).parent().parent();
 		$('#settings_menu > div',window.parent.document).hide();

@@ -1,4 +1,5 @@
 <?php
+add_theme_support('post-thumbnails');
 function custom_toolbar_link($wp_admin_bar){
 	if(get_the_ID()!=''){
 		$args = array(
@@ -26,6 +27,7 @@ if(isset($_GET['do'])){
 		wp_update_post($my_post);
 		add_post_meta($_GET['id'],'kodyok_content','1',true);
 		update_option('menu_style',stripslashes($_POST['menu']));
+		update_option('footer',stripslashes($_POST['footer']));
 		exit;
     } else if($_GET['do']=='get_content'){
     	if(isset($_GET['categories'])){
@@ -45,12 +47,10 @@ if(isset($_GET['do'])){
 		$i = 0;
 		foreach($posts as $post){
 			$new_posts[$i]['title'] = $post->post_title;
-			$images = get_attached_media('',$post->ID);
-			foreach($images as $image){
-				$new_posts[$i]['image'] = wp_get_attachment_image_src($image->ID,'medium')[0];
-				$new_posts[$i]['width'] = wp_get_attachment_image_src($image->ID,'medium')[1];
-				$new_posts[$i]['height'] = wp_get_attachment_image_src($image->ID,'medium')[2];
-			}
+			$image_detail = wp_get_attachment_image_src(get_post_thumbnail_id(),'medium');
+			$new_posts[$i]['image'] = $image_detail[0];
+			$new_posts[$i]['width'] = $image_detail[1];
+			$new_posts[$i]['height'] = $image_detail[2];
 			if(get_permalink($post->ID)){
 				$new_posts[$i]['link'] = get_permalink($post->ID);
 			} else {
