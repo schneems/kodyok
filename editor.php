@@ -545,18 +545,24 @@ if(isset($_GET['p'])){
 			    preventOnFilter: false,
 			    ghostClass: "place_holder",
 			    onStart: function (evt) {
+			    	margin_top = $(evt.item).css('margin-top');
+			    	margin_bottom = $(evt.item).css('margin-bottom');
+			    	$(evt.item).css('margin-top',0);
+			    	$(evt.item).css('margin-bottom',0);
 					div_content = $(evt.item).html();
 					$(evt.item).html('');
 					$('#design_area').contents().find('.grid').css('padding-top','5px');
 					$('#design_area').contents().find('.grid').css('padding-bottom','5px');
 				},
 				onEnd: function (evt) {
+					$(evt.item).css('margin-top',margin_top);
+			    	$(evt.item).css('margin-bottom',margin_bottom);
 					$(evt.item).html(div_content);
 					$('#design_area').contents().find('.grid').css('padding-top','0');
 					$('#design_area').contents().find('.grid').css('padding-bottom','0');
 				},
 				onClone: function (evt) {
-			    	$(evt.item).children('.element_panel').hide();
+					$(evt.item).children('.element_panel').hide();
 			    	if($(evt.item).hasClass('grid')){
 						$(evt.item).children('.row').children('.sortable').css('box-shadow','');
 					} else {
