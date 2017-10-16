@@ -46,6 +46,8 @@ if(!$menu_exists){
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/jquery-ui.min.js"></script>
     <link type="text/css" href="<?php echo get_stylesheet_directory_uri();?>/assets/css/jquery-ui.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/assets/font-awesome/css/font-awesome.min.css">
+    <script src="<?php echo get_stylesheet_directory_uri();?>/assets/swal/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet_directory_uri();?>/assets/swal/sweetalert.css">
     <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/style.css">
     <link href="<?php echo get_stylesheet_directory_uri();?>/assets/lightbox2/css/lightbox.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
@@ -104,6 +106,14 @@ if(!$menu_exists){
                     window.open($(this).attr('href')+'?kodyok','_top');
                 }
             });
+            $("#commentform").submit(function(e){
+                e.preventDefault();
+                swal(
+                    'You can\'t submit this form in edit mode.',
+                    '',
+                    'error'
+                );
+            });
         });
     </script>
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/core.js"></script>
@@ -134,7 +144,11 @@ if(!$menu_exists){
                     }
                 });
                 if(form_error>0){
-                    alert('This fields are required.');
+                    swal(
+                        'This fields are required.',
+                        '',
+                        'error'
+                    );
                 } else {
                     form_content = {};
                     $(this).parent().parent().children(".form_content").children().each(function(){
@@ -145,7 +159,11 @@ if(!$menu_exists){
                         url: get_site_url+"/?do=send_email",
                         data: {content:JSON.stringify(form_content)},
                         success: function(html){
-                            alert('Success');
+                            swal(
+                                'Success',
+                                '',
+                                'success'
+                            );
                         }
                     });
                     return false;

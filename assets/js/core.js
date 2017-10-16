@@ -261,13 +261,15 @@ function update_section_list(){
 		}
 	});
 }
-function run_before_save(){
-	$('section').css('border','0');
-	$('section').children('.sortable').css('border-left','0');
-	$('section').children('.sortable').css('border-right','0');
-	$('section').each(function(){
-		$(this).children('div:first').remove();
-	});
+function run_before_save(post_page){
+	if(post_page==0){
+		$('section').css('border','0');
+		$('section').children('.sortable').css('border-left','0');
+		$('section').children('.sortable').css('border-right','0');
+		$('section').each(function(){
+			$(this).children('div:first').remove();
+		});
+	}
 	$('.grid').find('.sortable').css('border','0');
 	$(".editor").remove();
 	$(".element_panel").remove();
@@ -275,13 +277,15 @@ function run_before_save(){
 	$('.editable').removeAttr('contenteditable');
 	$('.button').find('a').removeAttr('contenteditable');
 }
-function run_after_save(){
-	$('section').css('border','1px dashed #00ccff');
-	$('section').children('.sortable').css('border-left','1px dashed #ffcc00');
-	$('section').children('.sortable').css('border-right','1px dashed #ffcc00');
-	$('section').each(function(){
-		$(this).prepend('<div style="position:absolute;z-index:97;background:rgba(255,204,0,0.8);cursor:default;"><span class="fa fa-arrow-up section_up" style="font-size:26px;margin:5px;"></span><span class="fa fa-arrow-down section_down" style="font-size:26px;margin:5px;"></span><span class="fa fa-clone section_duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash section_delete" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog section_settings" style="font-size:26px;margin:5px;"></span></div>');
-	});
+function run_after_save(post_page){
+	if(post_page==0){
+		$('section').css('border','1px dashed #00ccff');
+		$('section').children('.sortable').css('border-left','1px dashed #ffcc00');
+		$('section').children('.sortable').css('border-right','1px dashed #ffcc00');
+		$('section').each(function(){
+			$(this).prepend('<div style="position:absolute;z-index:97;background:rgba(255,204,0,0.8);cursor:default;"><span class="fa fa-arrow-up section_up" style="font-size:26px;margin:5px;"></span><span class="fa fa-arrow-down section_down" style="font-size:26px;margin:5px;"></span><span class="fa fa-clone section_duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash section_delete" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog section_settings" style="font-size:26px;margin:5px;"></span></div>');
+		});
+	}
 	load_element_panel();
 }
 function apply_to_all(element_type,feature,value){

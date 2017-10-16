@@ -34,7 +34,12 @@ if(isset($_GET['p'])){
 			$('#settings_menu').css('left',$('#all_content').width()-300);
 		});
 		$("#save").click(function(){
-			$('#design_area')[0].contentWindow.run_before_save();
+			if($("#design_area").contents().find('#post_content_area').length==1){
+				post_page = 1;
+			} else {
+				post_page = 0;
+			}
+			$('#design_area')[0].contentWindow.run_before_save(post_page);
 			menu_style = {};
 			menu_style["font"] = $("#design_area").contents().find('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('font-family');
 			menu_style["color"] = $("#design_area").contents().find('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('color');
@@ -50,8 +55,12 @@ if(isset($_GET['p'])){
 				url: "<?php echo get_site_url();?>/?do=save&id=<?php echo $id;?>",
 				data: {content:content_html,menu:JSON.stringify(menu_style),footer:$("#design_area").contents().find('footer').children('.container').html()},
 				success: function(html){
-					alert('Success');
-					$('#design_area')[0].contentWindow.run_after_save();
+					swal(
+						'Success',
+						'',
+						'success'
+					);
+					$('#design_area')[0].contentWindow.run_after_save(post_page);
 				}
 			});
 			return false;
@@ -372,7 +381,11 @@ if(isset($_GET['p'])){
 					$('#section_id').attr('placeholder','Only these characters; a-z A-Z');
 				} else {
 					$('#design_area')[0].contentWindow.add_id($('#section_id').val());
-					alert('Success');
+					swal(
+						'Success',
+						'',
+						'success'
+					);
 				}
 			}
 		});
@@ -410,7 +423,11 @@ if(isset($_GET['p'])){
 		});
 		$("#save_email").click(function(){
 			$.get("<?php echo get_site_url();?>/?do=update_email&email="+$('#form_email').val(),function(data){
-				alert('Success');
+				swal(
+					'Success',
+					'',
+					'success'
+				);
 			});
 		});
 		$(".close_panel").click(function(){
@@ -432,7 +449,11 @@ if(isset($_GET['p'])){
 				url: "<?php echo get_site_url();?>/?do=save_seo&id=<?php echo $id;?>",
 				data: {seo_settings:JSON.stringify(seo_settings)},
 				success: function(html){
-					alert('Success');
+					swal(
+						'Success',
+						'',
+						'success'
+					);
 				}
 			});
 			return false;
@@ -634,6 +655,13 @@ if(isset($_GET['p'])){
 		}
 		$('#linkModal').modal('show');
 	}
+	window.onbeforeunload = function (e) {
+		e = e || window.event;
+		if(e){
+			e.returnValue = 'Note: Any unsaved changes will be lost.';
+		}
+		return 'Note: Any unsaved changes will be lost.';
+	};
 	</script>
 	<style type="text/css">
 		.picker { margin:0;padding:0;border:0;width:70px;height:20px;border-right:20px solid green;line-height:20px;}

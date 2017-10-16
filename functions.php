@@ -17,7 +17,7 @@ if(isset($_GET['do'])){
     	$i = 0;
 		foreach($pages as $page){
 			$new_pages[$i]['title'] = $page->post_title;
-			$new_pages[$i]['url'] = str_replace(get_site_url().'/','',get_page_link($page->ID));
+			$new_pages[$i]['url'] = get_page_link($page->ID);
 			$i++;
 		}
 		echo json_encode($new_pages);
