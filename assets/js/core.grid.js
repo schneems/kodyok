@@ -147,14 +147,12 @@ function set_content(categories,tags,is_new){
 				row_eq = 1;
 				column_eq = i-3;
 			}
-			$(active_element).children('.row').eq(row_eq).children('.sortable').eq(column_eq).find('img').attr('src',data[i].image);
-			$(active_element).children('.row').eq(row_eq).children('.sortable').eq(column_eq).find('img').attr('width',data[i].width);
-			$(active_element).children('.row').eq(row_eq).children('.sortable').eq(column_eq).find('img').attr('height',data[i].height);
-			$(active_element).children('.row').eq(row_eq).children('.sortable').eq(column_eq).find('.editable').html(data[i].title);
-			$(active_element).children('.row').eq(row_eq).children('.sortable').eq(column_eq).find('a').attr('href',data[i].link);
-			$(active_element).children('.row').eq(row_eq).children('.sortable').eq(column_eq).children('.image').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
-			$(active_element).children('.row').eq(row_eq).children('.sortable').eq(column_eq).children('.text').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
-			$(active_element).children('.row').eq(row_eq).children('.sortable').eq(column_eq).children('.button').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil button_edit" style="font-size:26px;margin:5px;"></span>');
+			$(active_element).children('.row').eq(row_eq).children('div').eq(column_eq).find('img').attr('src',data[i].image);
+			$(active_element).children('.row').eq(row_eq).children('div').eq(column_eq).find('.text').children('div').html(data[i].title);
+			$(active_element).children('.row').eq(row_eq).children('div').eq(column_eq).find('a').attr('href',data[i].link);
+			$(active_element).children('.row').eq(row_eq).children('div').eq(column_eq).children('.image').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
+			$(active_element).children('.row').eq(row_eq).children('div').eq(column_eq).children('.text').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
+			$(active_element).children('.row').eq(row_eq).children('div').eq(column_eq).children('.button').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil button_edit" style="font-size:26px;margin:5px;"></span>');
 		});
 		for(a=0;a<$(active_element).children('.row').length;a++){
 			last_height = 0;
@@ -165,7 +163,7 @@ function set_content(categories,tags,is_new){
 			});
 			$(active_element).children('.row').eq(a).children().each(function(){
 				if($(this).height()<last_height){
-					$(this).children('.button').css('margin-top',20+(last_height-$(this).height()));
+					$(this).children('.button').css('margin-top',$(active_element).attr('data-margin-top')+(last_height-$(this).height()));
 				}
 			});
 		}

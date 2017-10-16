@@ -61,7 +61,7 @@ function update_image(selected_image,id){
 		img.onload = function(){
 			$(active_element).css('max-width',this.width);
 			$(active_element).css('max-height',this.height);
-			image_resizable();
+			image_resizable($(active_element));
 		}
 		img.src = selected_image;
 	} else if($(active_element).hasClass('slider')){
@@ -70,7 +70,7 @@ function update_image(selected_image,id){
 		img = new Image();
 		img.onload = function(){
 			document.execCommand("insertHTML", false, '<div class="element image image_in_text" style="max-width:'+this.width+'px;max-height:'+this.height+'px;margin:auto;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="'+selected_image+'" class="img-responsive" /></a></div>');
-			image_resizable();
+			image_resizable($(active_element));
 		}
 		img.src = selected_image;
 	}
@@ -80,6 +80,7 @@ function remove_last_image(){
 }
 function change_image_border(value){
 	$(active_element).children('a').children('img').css('border-color',value);
+	apply_to_all('image','border-color',value);
 }
 function set_image_border(value){
 	border_value = $(active_element).children('a').children('img').css('border-width');
@@ -91,6 +92,8 @@ function set_image_border(value){
 	}
 	$(active_element).children('a').children('img').css('border-style','solid');
 	$(active_element).children('a').children('img').css('border-width',border_value+'px');
+	apply_to_all('image','border-style','solid');
+	apply_to_all('image','border-width',border_value+'px');
 	return border_value+'px';
 }
 function set_shape(value){
@@ -99,9 +102,29 @@ function set_shape(value){
 	} else if(value=='square'){
 		$(active_element).find('a > img').removeClass('img-circle');
 	}
+	apply_to_all('image_shape','',value);
 }
-function image_resizable(){
-	$(".image").resizable({
-		aspectRatio: true
+function image_resizable(resize_element){
+	if(resize_element=='.load_resize'){
+		$(resize_element).find('.ui-resizable-handle').remove();
+	}
+	$(resize_element).resizable({
+		aspectRatio: true,
+		resize: function (event,ui) {
+			if($(ui.element).parent().parent().parent().hasClass('dynamic_content')){
+				a = 0;
+				$(ui.element).parent().parent().parent().children('.row').each(function(){
+					b = 0;
+					$(ui.element).parent().parent().parent().children('.row').eq(a).children('div').each(function(){
+						$(ui.element).parent().parent().parent().children('.row').eq(a).children('div').eq(b).find('.image').css('width',ui.size.width);
+						$(ui.element).parent().parent().parent().children('.row').eq(a).children('div').eq(b).find('.image').css('height',ui.size.height);
+						b++;
+					});
+					a++;
+				});
+			}
+		},
+		handles: 'e,s,se'
 	});
+	$(resize_element).removeClass('load_resize');
 }

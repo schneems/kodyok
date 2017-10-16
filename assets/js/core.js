@@ -25,6 +25,10 @@ $(document).ready(function(){
 			get_slider_settings();
     		$('#slider_settings',window.parent.document).show();
     		$('#slider_settings > h3',window.parent.document).hide();
+		} else if($(active_element).hasClass('text')){
+			if($(active_element).parent().parent().parent().hasClass('dynamic_content')){
+				$('#text_settings',window.parent.document).show();
+			}
 		}
 		$('#top_margin',window.parent.document).val($(active_element).css('margin-top'));
 		$('#bottom_margin',window.parent.document).val($(active_element).css('margin-bottom'));
@@ -58,7 +62,7 @@ $(document).ready(function(){
 		$(this).children('.element_panel').css('position','absolute');
 		$(this).children('.element_panel').css('z-index','96');
 		if($(this).hasClass('grid')){
-			$(this).children('.row').children('.sortable').css('box-shadow','inset 0 0 0 1px #ffcc00');
+			$(this).children('.row').children('div').css('box-shadow','inset 0 0 0 1px #ffcc00');
 			$(this).children('.element_panel').css('background-color','rgba(255,204,0,0.8)');
 			$(this).children('.element_panel').css('margin-top','-'+$(this).children('.element_panel').height());
 		} else {
@@ -76,7 +80,7 @@ $(document).ready(function(){
 	$("body").on("mouseleave",".element",function(){
 		$(this).children('.element_panel').css('display','none');
 		if($(this).hasClass('grid')){
-			$(this).children('.row').children('.sortable').css('box-shadow','');
+			$(this).children('.row').children('div').css('box-shadow','');
 		} else {
 			$(this).css('box-shadow','');
 		}
@@ -117,6 +121,7 @@ function load_element_panel(){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil icon_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link icon_link" style="font-size:26px;margin:5px;"></span></div>');
 			} else if($(this).hasClass('image')){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div>');
+				image_resizable($(this));
 			} else if($(this).hasClass('slider')){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div>');
 				$(this).replaceWith('<div class="element slider">'+$(this).html()+'</div>');
@@ -187,21 +192,10 @@ function rgbToHex(r,g,b){
 }
 function set_align(value){
 	if($(active_element).hasClass('button')){
-		if(value=='center'){
-			$(active_element).css('text-align','center');
-		} else if(value=='left'){
-			$(active_element).css('text-align','left');
-		} else if(value=='right'){
-			$(active_element).css('text-align','right');
-		}
+		$(active_element).css('text-align',value);
+		apply_to_all('button_align','text-align',value);
 	} else if($(active_element).hasClass('icon')){
-		if(value=='center'){
-			$(active_element).css('text-align','center');
-		} else if(value=='left'){
-			$(active_element).css('text-align','left');
-		} else if(value=='right'){
-			$(active_element).css('text-align','right');
-		}
+		$(active_element).css('text-align',value);
 	} else if($(active_element).hasClass('image')){
 		if($(active_element).hasClass('image_in_text')){
 			if(value=='center'){
@@ -221,14 +215,23 @@ function set_align(value){
 			if(value=='center'){
 				$(active_element).css('margin-left','auto');
 				$(active_element).css('margin-right','auto');
+				apply_to_all('image_align','margin-left','auto');
+				apply_to_all('image_align','margin-right','auto');
 			} else if(value=='left'){
 				$(active_element).css('margin-left','0');
 				$(active_element).css('margin-right','auto');
+				apply_to_all('image_align','margin-left','0');
+				apply_to_all('image_align','margin-right','auto');
 			} else if(value=='right'){
 				$(active_element).css('margin-left','auto');
 				$(active_element).css('margin-right','0');
+				apply_to_all('image_align','margin-left','auto');
+				apply_to_all('image_align','margin-right','0');
 			}
 		}
+	} else if($(active_element).hasClass('text')){
+		$(active_element).children('div').last().css('text-align',value);
+		apply_to_all('text_align','text-align',value);
 	}
 }
 function set_margin(value){
@@ -241,6 +244,13 @@ function set_margin(value){
 		margin_value = parseInt(margin_value[0])+10;
 	}
 	$(active_element).css('margin-'+margin_side[0],margin_value+'px');
+	if($(active_element).hasClass('button')){
+		apply_to_all('button_margin','margin-'+margin_side[0],margin_value);
+	} else if($(active_element).hasClass('image')){
+		apply_to_all('image_margin','margin-'+margin_side[0],margin_value);
+	} else if($(active_element).hasClass('text')){
+		apply_to_all('text_margin','margin-'+margin_side[0],margin_value);
+	}
 	return margin_value+'px';
 }
 function update_section_list(){
@@ -261,6 +271,7 @@ function run_before_save(){
 	$('.grid').find('.sortable').css('border','0');
 	$(".editor").remove();
 	$(".element_panel").remove();
+	$(".ui-resizable-handle").remove();
 	$('.editable').removeAttr('contenteditable');
 	$('.button').find('a').removeAttr('contenteditable');
 }
@@ -272,4 +283,43 @@ function run_after_save(){
 		$(this).prepend('<div style="position:absolute;z-index:97;background:rgba(255,204,0,0.8);cursor:default;"><span class="fa fa-arrow-up section_up" style="font-size:26px;margin:5px;"></span><span class="fa fa-arrow-down section_down" style="font-size:26px;margin:5px;"></span><span class="fa fa-clone section_duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash section_delete" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog section_settings" style="font-size:26px;margin:5px;"></span></div>');
 	});
 	load_element_panel();
+}
+function apply_to_all(element_type,feature,value){
+	if($(active_element).parent().parent().parent().hasClass('dynamic_content')){
+		grid_element = $(active_element).parent().parent().parent();
+		a = 0;
+		$(grid_element).children('.row').each(function(){
+			b = 0;
+			$(grid_element).eq(a).children('div').each(function(){
+				if(element_type=='button'){
+					$(grid_element).eq(b).find('.button').children('a').css(feature,value);
+				} else if(element_type=='button_align'){
+					$(grid_element).eq(b).find('.button').css(feature,value);
+				} else if(element_type=='image'){
+					$(grid_element).eq(b).find('.image > a > img').css(feature,value);
+				} else if(element_type=='image_align'){
+					$(grid_element).eq(b).find('.image').css(feature,value);
+				} else if(element_type=='button_margin'){
+					$(grid_element).eq(b).find('.button').css(feature,value+'px');
+					$(grid_element).attr('data-margin-top',value);
+				} else if(element_type=='image_margin'){
+					$(grid_element).eq(b).find('.image').css(feature,value+'px');
+				} else if(element_type=='text_margin'){
+					$(grid_element).eq(b).find('.text').css(feature,value+'px');
+				} else if(element_type=='image_shape'){
+					if(value=='circle'){
+						$(grid_element).eq(b).find('.image > a > img').addClass('img-circle');
+					} else if(value=='square'){
+						$(grid_element).eq(b).find('.image > a > img').removeClass('img-circle');
+					}
+				} else if(element_type=='text'){
+					$(grid_element).eq(b).find('.text').find('div:last').css(feature,value);
+				} else if(element_type=='text_align'){
+					$(grid_element).eq(b).find('.text').find('div:last').css(feature,value);
+				}
+				b++;
+			});
+			a++;
+		});
+	}
 }

@@ -144,6 +144,8 @@ if(isset($_GET['p'])){
 					$('#design_area')[0].contentWindow.change_menu_font('#'+hex);
 				} else if($(el).attr('data-type')=='section_background'){
 					$('#design_area')[0].contentWindow.change_section_background('rgba('+rgb['r']+','+rgb['g']+','+rgb['b']+','+$('#section_opacity').val()/100+')');
+				} else if($(el).attr('data-type')=='text_font'){
+					$('#design_area')[0].contentWindow.change_text_font('#'+hex);
 				}
 				$(el).css('border-color','#'+hex);
 				// Fill the text box just if the color was set using the picker, and not the colpickSetColor function.
@@ -168,6 +170,16 @@ if(isset($_GET['p'])){
 		$("#button_change_size").change(function(){
 			if($("#button_change_size").val()!=0){
 				$('#design_area')[0].contentWindow.set_button_size($("#button_change_size").val());
+			}
+		});
+		$("#text_change_font").change(function(){
+			if($("#text_change_font").val()!=0){
+				$('#design_area')[0].contentWindow.set_text_font($("#text_change_font").val(),$("#text_change_font > option:selected").text());
+			}
+		});
+		$("#text_change_size").change(function(){
+			if($("#text_change_size").val()!=0){
+				$('#design_area')[0].contentWindow.set_text_size($("#text_change_size").val());
 			}
 		});
 		$("body").on("click",".set_grid_opacity",function(){
@@ -210,6 +222,9 @@ if(isset($_GET['p'])){
 			$('#design_area')[0].contentWindow.get_font_list();
 		});
 		$("body").on("click","#button_change_font",function(){
+			$('#design_area')[0].contentWindow.get_font_list();
+		});
+		$("body").on("click","#text_change_font",function(){
 			$('#design_area')[0].contentWindow.get_font_list();
 		});
 		$("body").on("click",".set_menu_opacity",function(){
@@ -436,8 +451,8 @@ if(isset($_GET['p'])){
 				$('.open_window').addClass('left_menu_icon');
 				$('.open_window').css('background-color','');
 				$('.open_window > a').css('color','#677888');
-				$('#design_area').contents().find('#content_area').prepend('<div class="blank_section"><div class="container section_placeholder" style="min-height:50px;font-size:40px;text-align:center;">DROP HERE</div></div>');
-				$('<div class="blank_section"><div class="container section_placeholder" style="min-height:50px;font-size:40px;text-align:center;">DROP HERE</div></div>').insertAfter($('#design_area').contents().find('section'));
+				$('#design_area').contents().find('#content_area').prepend('<div class="blank_section" style="background-color:#ffcc00;color:#00ccff;"><div class="container section_placeholder" style="min-height:50px;font-size:40px;text-align:center;">DROP HERE</div></div>');
+				$('<div class="blank_section" style="background-color:#ffcc00;color:#00ccff;"><div class="container section_placeholder" style="min-height:50px;font-size:40px;text-align:center;">DROP HERE</div></div>').insertAfter($('#design_area').contents().find('section'));
 				sortable_id = 0;
 				$("#design_area").contents().find('.section_placeholder').each(function(){
 					Sortable.create(document.getElementById('design_area').contentWindow.document.getElementsByClassName('section_placeholder')[sortable_id], {
@@ -560,6 +575,16 @@ if(isset($_GET['p'])){
 					$(evt.item).html(div_content);
 					$('#design_area').contents().find('.grid').css('padding-top','0');
 					$('#design_area').contents().find('.grid').css('padding-bottom','0');
+					if($(evt.item).hasClass('grid')){
+						$(evt.item).find('.image').each(function(){
+							$(this).addClass('load_resize');
+							$('#design_area')[0].contentWindow.image_resizable('.load_resize');
+						});
+						load_sortable();
+					} else if($(evt.item).hasClass('image')){
+						$(evt.item).addClass('load_resize');
+						$('#design_area')[0].contentWindow.image_resizable('.load_resize');
+					}
 				},
 				onClone: function (evt) {
 					$(evt.item).children('.element_panel').hide();
@@ -832,6 +857,47 @@ if(isset($_GET['p'])){
 							</tr>
 							<tr>
 								<td>Border color:</td><td align="right"># <input type="text" class="picker" data-type="button_border"></input></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div id="text_settings" style="display:none;">
+		    	<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Style</h3>
+					</div>
+					<div class="panel-body">
+				    	<table width="100%" style="color:#677888;font-size:14px;">
+				    		<tr>
+								<td>Align:</td><td align="right"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
+							</tr>
+						</table>
+						<select class="form-control" id="text_change_font" style="width:50%;float:left;">
+							<option value="0">Select font</option>
+						</select>
+						<select class="form-control" id="text_change_size" style="width:50%;">
+							<option value="0">Size</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+							<option value="11">11</option>
+							<option value="12">12</option>
+							<option value="14">14</option>
+							<option value="16">16</option>
+							<option value="18">18</option>
+							<option value="20">20</option>
+							<option value="22">22</option>
+							<option value="24">24</option>
+							<option value="26">26</option>
+							<option value="28">28</option>
+							<option value="36">36</option>
+							<option value="48">48</option>
+							<option value="72">72</option>
+						</select>
+						<table width="100%" style="color:#677888;font-size:14px;">
+							<tr>
+								<td>Font color:</td><td align="right"># <input type="text" class="picker" data-type="text_font"></input></td>
 							</tr>
 						</table>
 					</div>

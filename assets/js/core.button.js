@@ -13,6 +13,21 @@ $(document).ready(function(){
 		active_element = $(this).parent().parent();
 		parent.link_edit($(active_element).children('a').attr('href'));
 	});
+	$("body").on("input","a",function(){
+		button_text = $(this).html();
+		if($(this).parent().hasClass('button') && $(this).parent().parent().parent().parent().hasClass('dynamic_content')){
+			grid_element = $(this).parent().parent().parent().parent();
+			a = 0;
+			$(grid_element).children('.row').each(function(){
+				b = 0;
+				$(grid_element).eq(a).children('div').each(function(){
+					$(grid_element).eq(b).find('.button').children('a').not(':focus').html(button_text);
+					b++;
+				});
+				a++;
+			});
+		}
+	});
 });
 function get_button_settings(){
 	opacity_value = $(active_element).children('a').css('background-color');
@@ -36,6 +51,8 @@ function set_button_border(change_type){
 	}
 	$(active_element).children('a').css('border-style','solid');
 	$(active_element).children('a').css('border-width',border_value+'px');
+	apply_to_all('button','border-style','solid');
+	apply_to_all('button','border-width',border_value+'px');
 	return border_value+'px';
 }
 function set_button_opacity(change_type){
@@ -63,23 +80,26 @@ function set_button_opacity(change_type){
 	}
 	if(opacity_defined==1){
 		new_background_color = old_opacity_value_1.replace('rgb(','rgba(');
-		new_background_color = new_background_color.replace(old_opacity_value_2+')',opacity_value/100+')');
-		$(active_element).children('a').css('background-color',new_background_color);
+		new_background_color = new_background_color.replace(old_opacity_value_2+')',opacity_value/100+')');		
 	} else {
 		new_background_color = old_opacity_value_1.replace('rgb(','rgba(');
 		new_background_color = new_background_color.replace(')',','+opacity_value/100+')');
-		$(active_element).children('a').css('background-color',new_background_color);
 	}
+	$(active_element).children('a').css('background-color',new_background_color);
+	apply_to_all('button','background-color',new_background_color);
 	return opacity_value;
 }
 function change_button_background(value){
 	$(active_element).children('a').css('background',value);
+	apply_to_all('button','background',value);
 }
 function change_button_font(value){
 	$(active_element).children('a').css('color',value);
+	apply_to_all('button','color',value);
 }
 function change_button_border(value){
 	$(active_element).children('a').css('border-color',value);
+	apply_to_all('button','border-color',value);
 }
 function set_button_font(value,font_name){
 	WebFont.load({
@@ -88,7 +108,9 @@ function set_button_font(value,font_name){
 		}
 	});
 	$(active_element).children('a').css('font-family',value);
+	apply_to_all('button','font-family',value);
 }
 function set_button_size(value){
 	$(active_element).children('a').css('font-size',value);
+	apply_to_all('button','font-size',value);
 }
