@@ -67,7 +67,7 @@ if(!$menu_exists){
                     });
                 }
             }
-            $('.button').children('a').each(function(){
+            $('a').each(function(){
                 if(loaded_fonts.indexOf($(this).css('font-family').split(',')[0].replace(/"/g,''))=='-1'){
                     loaded_fonts.push($(this).css('font-family').split(',')[0].replace(/"/g,''));
                     WebFont.load({
@@ -77,7 +77,7 @@ if(!$menu_exists){
                     });
                 }
             });
-            $('#content_area').find('font').each(function(){
+            $('font').each(function(){
                 if($(this).attr('face')){
                     if(loaded_fonts.indexOf($(this).attr('face').split(',')[0])=='-1'){
                         loaded_fonts.push($(this).attr('face').split(',')[0]);
@@ -87,16 +87,6 @@ if(!$menu_exists){
                             }
                         });
                     }
-                }
-            });
-            $('#content_area').find('.text > div:last').each(function(){
-                if(loaded_fonts.indexOf($(this).css('font-family').split(',')[0].replace(/"/g,''))=='-1'){
-                    loaded_fonts.push($(this).css('font-family').split(',')[0].replace(/"/g,''));
-                    WebFont.load({
-                        google: {
-                            families: [$(this).css('font-family').split(',')[0].replace(/"/g,'')]
-                        }
-                    });
                 }
             });
             $(window).on('resize',function(){
@@ -259,8 +249,11 @@ if(!$menu_exists){
             }
             $.getJSON(get_site_url+'/?do=get_content&post_count=0&limit=8&'+json_url,function(data){
                 $.each(data,function(i){
+                    if(!data[i].image){
+                        data[i].image = get_stylesheet_directory_uri + '/assets/img/300x300.gif';
+                    }
                     $(active_element).children('.row').children('div').eq(i).find('img').attr('src',data[i].image);
-                    $(active_element).children('.row').children('div').eq(i).find('.text').children('div').html(data[i].title);
+                    $(active_element).children('.row').children('div').eq(i).find('.text > div > a').html(data[i].title);
                     $(active_element).children('.row').children('div').eq(i).find('a').attr('href',data[i].link);
                     if(is_editor==1){
                         $(active_element).children('.row').children('div').eq(i).find('.text').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
@@ -306,8 +299,11 @@ if(!$menu_exists){
                     $.each(data,function(i){
                         post_count = $(active_element).children('.row').first().children('div').length;
                         $(active_element).children('.row').first().children('div').eq(post_count-1).clone().appendTo($(active_element).children('.row').first());
+                        if(!data[i].image){
+                            data[i].image = get_stylesheet_directory_uri + '/assets/img/300x300.gif';
+                        }
                         $(active_element).children('.row').first().children('div').eq(post_count).find('img').attr('src',data[i].image);
-                        $(active_element).children('.row').first().children('div').eq(post_count).find('.text').children('div').last().html(data[i].title);
+                        $(active_element).children('.row').first().children('div').eq(post_count).find('.text > div:last > a').html(data[i].title);
                         $(active_element).children('.row').first().children('div').eq(post_count).find('a').attr('href',data[i].link);
                     });
                 }

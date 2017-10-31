@@ -201,7 +201,7 @@ function get_font_list(){
 	}
 }
 function change_text_font(value){
-	$(active_element).children('div').last().css('color',value);
+	$(active_element).children('div').last().find('a').css('color',value);
 	apply_to_all('text','color',value);
 }
 function set_text_font(value,font_name){
@@ -210,14 +210,14 @@ function set_text_font(value,font_name){
 			families: [font_name]
 		},
 		active: function() {
-			$(active_element).children('div').last().css('font-family',value);
+			$(active_element).children('div').last().find('a').css('font-family',value);
 			apply_to_all('text','font-family',value);
 			refresh_height();
 		}
 	});
 }
 function set_text_size(value){
-	$(active_element).children('div').last().css('font-size',value);
+	$(active_element).children('div').last().find('a').css('font-size',value);
 	apply_to_all('text','font-size',value);
 	refresh_height();
 }

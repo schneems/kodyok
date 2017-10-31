@@ -276,7 +276,7 @@ function apply_to_all(element_type,feature,value){
 		grid_element = $(active_element).parent().parent().parent().parent();
 		$(grid_element).children('.row').children('div').each(function(){
 			if(element_type=='text'){
-				$(this).find('.text').find('div:last').css(feature,value);
+				$(this).find('.text > div:last > a').css(feature,value);
 			} else if(element_type=='text_align'){
 				$(this).find('.text').find('div:last').css(feature,value);
 			}
