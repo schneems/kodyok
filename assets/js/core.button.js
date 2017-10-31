@@ -51,8 +51,6 @@ function set_button_border(change_type){
 	}
 	$(active_element).children('a').css('border-style','solid');
 	$(active_element).children('a').css('border-width',border_value+'px');
-	apply_to_all('button','border-style','solid');
-	apply_to_all('button','border-width',border_value+'px');
 	return border_value+'px';
 }
 function set_button_opacity(change_type){
@@ -86,20 +84,16 @@ function set_button_opacity(change_type){
 		new_background_color = new_background_color.replace(')',','+opacity_value/100+')');
 	}
 	$(active_element).children('a').css('background-color',new_background_color);
-	apply_to_all('button','background-color',new_background_color);
 	return opacity_value;
 }
 function change_button_background(value){
 	$(active_element).children('a').css('background',value);
-	apply_to_all('button','background',value);
 }
 function change_button_font(value){
 	$(active_element).children('a').css('color',value);
-	apply_to_all('button','color',value);
 }
 function change_button_border(value){
 	$(active_element).children('a').css('border-color',value);
-	apply_to_all('button','border-color',value);
 }
 function set_button_font(value,font_name){
 	WebFont.load({
@@ -108,9 +102,7 @@ function set_button_font(value,font_name){
 		}
 	});
 	$(active_element).children('a').css('font-family',value);
-	apply_to_all('button','font-family',value);
 }
 function set_button_size(value){
 	$(active_element).children('a').css('font-size',value);
-	apply_to_all('button','font-size',value);
 }

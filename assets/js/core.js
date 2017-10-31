@@ -26,7 +26,8 @@ $(document).ready(function(){
     		$('#slider_settings',window.parent.document).show();
     		$('#slider_settings > h3',window.parent.document).hide();
 		} else if($(active_element).hasClass('text')){
-			if($(active_element).parent().parent().parent().hasClass('dynamic_content')){
+			if($(active_element).parent().parent().parent().parent().hasClass('dynamic_content')){
+				$('#margin_settings',window.parent.document).hide();
 				$('#text_settings',window.parent.document).show();
 			}
 		}
@@ -89,20 +90,6 @@ $(document).ready(function(){
 		}
 	});
 	load_element_panel();
-	$('.dynamic_content').each(function(){
-		active_element = $(this);
-		if($(this).attr('data-categories')){
-			categories = $(this).attr('data-categories');
-		} else {
-			categories = '';
-		}
-		if($(this).attr('data-tags')){
-			tags = $(this).attr('data-tags');
-		} else {
-			tags = '';
-		}
-		set_content(categories,tags,0);
-	});
 });
 function load_element_panel(){
 	$('.element').each(function(){
@@ -114,6 +101,8 @@ function load_element_panel(){
 			} else if($(this).hasClass('grid')){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-columns column_settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-plus add_row" style="font-size:26px;margin:5px;"></span><span class="fa fa-minus remove_row" style="font-size:26px;margin:5px;"></span></div>');
 				if($(this).hasClass('dynamic_content')){
+					$(this).children('.element_panel').children('.settings').remove();
+					$(this).children('.element_panel').children('.column_settings').remove();
 					$(this).children('.element_panel').children('.add_row').remove();
 					$(this).children('.element_panel').children('.remove_row').remove();
 				}
@@ -131,11 +120,9 @@ function load_element_panel(){
 			}
 		}
 	});
-	$('.dynamic_content').find('.image').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
 	$('.dynamic_content').find('.text').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
-	$('.dynamic_content').find('.button').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil button_edit" style="font-size:26px;margin:5px;"></span>');
 }
-function update_link(link){
+function update_link(link,blank){
 	if($(active_element).hasClass('text')){
 		if(window.getSelection){
 			currSelection = window.getSelection();
@@ -147,17 +134,20 @@ function update_link(link){
 		document.execCommand('createLink',false,link);
 	} else if($(active_element).hasClass('image')){
 		$(active_element).children('a').attr('href',link);
-		if(link.search('http://')>=0 || link.search('https://')>=0){
+		$(active_element).children('a').removeAttr('target');
+		if(blank==1){
 			$(active_element).children('a').attr('target','_blank');
 		}
 	} else if($(active_element).hasClass('button')){
 		$(active_element).children('a').attr('href',link);
-		if(link.search('http://')>=0 || link.search('https://')>=0){
+		$(active_element).children('a').removeAttr('target');
+		if(blank==1){
 			$(active_element).children('a').attr('target','_blank');
 		}
 	} else if($(active_element).hasClass('icon')){
 		$(active_element).children('a').attr('href',link);
-		if(link.search('http://')>=0 || link.search('https://')>=0){
+		$(active_element).children('a').removeAttr('target');
+		if(blank==1){
 			$(active_element).children('a').attr('target','_blank');
 		}
 	}
@@ -193,7 +183,6 @@ function rgbToHex(r,g,b){
 function set_align(value){
 	if($(active_element).hasClass('button')){
 		$(active_element).css('text-align',value);
-		apply_to_all('button_align','text-align',value);
 	} else if($(active_element).hasClass('icon')){
 		$(active_element).css('text-align',value);
 	} else if($(active_element).hasClass('image')){
@@ -215,18 +204,12 @@ function set_align(value){
 			if(value=='center'){
 				$(active_element).css('margin-left','auto');
 				$(active_element).css('margin-right','auto');
-				apply_to_all('image_align','margin-left','auto');
-				apply_to_all('image_align','margin-right','auto');
 			} else if(value=='left'){
 				$(active_element).css('margin-left','0');
 				$(active_element).css('margin-right','auto');
-				apply_to_all('image_align','margin-left','0');
-				apply_to_all('image_align','margin-right','auto');
 			} else if(value=='right'){
 				$(active_element).css('margin-left','auto');
 				$(active_element).css('margin-right','0');
-				apply_to_all('image_align','margin-left','auto');
-				apply_to_all('image_align','margin-right','0');
 			}
 		}
 	} else if($(active_element).hasClass('text')){
@@ -244,13 +227,6 @@ function set_margin(value){
 		margin_value = parseInt(margin_value[0])+10;
 	}
 	$(active_element).css('margin-'+margin_side[0],margin_value+'px');
-	if($(active_element).hasClass('button')){
-		apply_to_all('button_margin','margin-'+margin_side[0],margin_value);
-	} else if($(active_element).hasClass('image')){
-		apply_to_all('image_margin','margin-'+margin_side[0],margin_value);
-	} else if($(active_element).hasClass('text')){
-		apply_to_all('text_margin','margin-'+margin_side[0],margin_value);
-	}
 	return margin_value+'px';
 }
 function update_section_list(){
@@ -276,6 +252,13 @@ function run_before_save(post_page){
 	$(".ui-resizable-handle").remove();
 	$('.editable').removeAttr('contenteditable');
 	$('.button').find('a').removeAttr('contenteditable');
+	$("body").find('.dynamic_content').each(function(){
+		$(this).find('.row:first > div:gt(7)').remove();
+		refresh_height();
+		if($(this).find('.row:last').css('display')=='none'){
+			$(this).find('.row:last').show();
+		}
+	});
 }
 function run_after_save(post_page){
 	if(post_page==0){
@@ -289,41 +272,14 @@ function run_after_save(post_page){
 	load_element_panel();
 }
 function apply_to_all(element_type,feature,value){
-	if($(active_element).parent().parent().parent().hasClass('dynamic_content')){
-		grid_element = $(active_element).parent().parent().parent();
-		a = 0;
-		$(grid_element).children('.row').each(function(){
-			b = 0;
-			$(grid_element).eq(a).children('div').each(function(){
-				if(element_type=='button'){
-					$(grid_element).eq(b).find('.button').children('a').css(feature,value);
-				} else if(element_type=='button_align'){
-					$(grid_element).eq(b).find('.button').css(feature,value);
-				} else if(element_type=='image'){
-					$(grid_element).eq(b).find('.image > a > img').css(feature,value);
-				} else if(element_type=='image_align'){
-					$(grid_element).eq(b).find('.image').css(feature,value);
-				} else if(element_type=='button_margin'){
-					$(grid_element).eq(b).find('.button').css(feature,value+'px');
-					$(grid_element).attr('data-margin-top',value);
-				} else if(element_type=='image_margin'){
-					$(grid_element).eq(b).find('.image').css(feature,value+'px');
-				} else if(element_type=='text_margin'){
-					$(grid_element).eq(b).find('.text').css(feature,value+'px');
-				} else if(element_type=='image_shape'){
-					if(value=='circle'){
-						$(grid_element).eq(b).find('.image > a > img').addClass('img-circle');
-					} else if(value=='square'){
-						$(grid_element).eq(b).find('.image > a > img').removeClass('img-circle');
-					}
-				} else if(element_type=='text'){
-					$(grid_element).eq(b).find('.text').find('div:last').css(feature,value);
-				} else if(element_type=='text_align'){
-					$(grid_element).eq(b).find('.text').find('div:last').css(feature,value);
-				}
-				b++;
-			});
-			a++;
+	if($(active_element).parent().parent().parent().parent().hasClass('dynamic_content')){
+		grid_element = $(active_element).parent().parent().parent().parent();
+		$(grid_element).children('.row').children('div').each(function(){
+			if(element_type=='text'){
+				$(this).find('.text').find('div:last').css(feature,value);
+			} else if(element_type=='text_align'){
+				$(this).find('.text').find('div:last').css(feature,value);
+			}
 		});
 	}
 }

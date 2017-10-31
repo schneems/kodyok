@@ -1,14 +1,3 @@
-$(document).ready(function(){
-	$('body').on('click','.slider_settings',function(){
-		active_element = $(this).parent().next();
-		$('#iframe',window.parent.document).css('width',$('#all_content',window.parent.document).width()-380);
-		$('#settings_menu',window.parent.document).show();
-		$('#settings_menu > div',window.parent.document).hide();
-		$('#slider_settings',window.parent.document).show();
-		$('#slider_settings > h3',window.parent.document).show();
-		get_slider_settings();
-	});
-});
 function get_slider_settings(){
 	$('#slider_content',window.parent.document).html('');
 	a = 0;

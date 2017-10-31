@@ -196,8 +196,8 @@ if(isset($_GET['p'])){
 			$('#grid_opacity').val(opacity_value);
 		});
 		$("body").on("click",".set_column",function(){
-			$('.set_column').css('border','1px solid #666');
-			$(this).css('border','1px solid #EEE');
+			$('.set_column').css('border','1px solid #EEE');
+			$(this).css('border','1px solid #666');
 			set_column = $('#design_area')[0].contentWindow.set_column($(this).attr('rel'));
 			$('#customize_layout').html(set_column);
 		});
@@ -293,12 +293,14 @@ if(isset($_GET['p'])){
 						$('#link_section').parent().addClass('has-error');
 					} else {
 						link = $('#link_section').val();
+						blank = 0;
 					}
 				} else if($('#link_type').val()=='page'){
 					if($('#link_page').val()==0){
 						$('#link_page').parent().addClass('has-error');
 					} else {
 						link = $('#link_page').val();
+						blank = 0;
 					}
 				} else if($('#link_type').val()=='url'){
 					if($('#link_url').val()==''){
@@ -308,13 +310,14 @@ if(isset($_GET['p'])){
 							$('#link_url').val('http://'+$('#link_url').val());
 						}
 						link = $('#link_url').val();
+						blank = 1;
 					}
 				}
 				if(link!=''){
 					if(menu_item_id==''){
-						$('#design_area')[0].contentWindow.update_link(link);
+						$('#design_area')[0].contentWindow.update_link(link,blank);
 					} else {
-						$('#design_area')[0].contentWindow.update_menu_link(menu_item_id,link);
+						$('#design_area')[0].contentWindow.update_menu_link(menu_item_id,link,blank);
 						menu_item_id = '';
 					}
 					$('#linkModal').modal('hide');
@@ -415,7 +418,7 @@ if(isset($_GET['p'])){
 				tags[i] = $(this).val();
 				i++;
 			});
-			$('#design_area')[0].contentWindow.set_content(categories,tags,1);
+			$('#design_area')[0].contentWindow.set_content(categories,tags,1,1);
 			$('#contentModal').modal('hide');
 		});
 		$("#menu").click(function(){
@@ -536,33 +539,35 @@ if(isset($_GET['p'])){
 			onEnd: function (evt) {
 				$('#design_area').contents().find('.grid').css('padding-top','0');
 				$('#design_area').contents().find('.grid').css('padding-bottom','0');
-				if(active_element=='button'){
-					$(evt.item).replaceWith('<div class="element button" style="text-align:center;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil button_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link button_link" style="font-size:26px;margin:5px;"></span></div><a href="#" class="btn" style="padding:10px;padding-left:20px;padding-right:20px;background-color:#EEE;color:#000;text-decoration:none;">New button</a></div>');
-				} else if(active_element=='form'){
-					$(evt.item).replaceWith('<div class="element form"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil form_edit" style="font-size:26px;margin:5px;"></span></div><div class="form_content"></div><div class="form-group" style="text-align:center;"><a class="btn send_button" style="color:#000;background-color:#EEE;">Send</a></div></div>');
-				} else if(active_element=='grid'){
-					$(evt.item).replaceWith('<div class="element grid"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-columns column_settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-plus add_row" style="font-size:26px;margin:5px;"></span><span class="fa fa-minus remove_row" style="font-size:26px;margin:5px;"></span></div><div class="row"><div class="col-md-12 sortable" style="min-height:50px;"></div></div></div>');
-				} else if(active_element=='icon'){
-					$(evt.item).replaceWith('<div class="element icon" style="text-align:center;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil icon_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link icon_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><i class="fa fa-font-awesome" aria-hidden="true" style="font-size:50px;"></i></a></div>');
-					$('#iconModal').modal('show');
-					$('#design_area')[0].contentWindow.select_active_icon();
-				} else if(active_element=='image'){
-					$(evt.item).replaceWith('<div class="element image"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/blank.gif" class="img-responsive" /></a></div>');
-					image_edit();
-					$('#design_area')[0].contentWindow.select_active_element();
-				} else if(active_element=='slider'){
-					id = 1;
-					$("#design_area").contents().find('.slider').each(function(){
-						slider_tag_id = $(this).children('.carousel').attr('id').split('_');
-						if(slider_tag_id[1]>=id){
-							id = parseInt(slider_tag_id[1])+1;
-						}
-					});
-					$(evt.item).replaceWith('<div class="element slider"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div><div id="slider_'+id+'" class="carousel slide" data-ride="carousel" data-interval="false" style="min-height:100px;"><ol class="carousel-indicators"></ol><div class="carousel-inner" role="listbox"></div><a class="left carousel-control" href="#slider_'+id+'" role="button" data-slide="prev"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#slider_'+id+'" role="button" data-slide="next"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a></div></div>');
-				} else if(active_element=='text'){
-					$(evt.item).replaceWith('<div class="element text"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil text_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-check text_edit_done" style="font-size:26px;margin:5px;display:none;"></span></div><div class="editable" style="text-align:center;font-size:20px;" spellcheck="false">Text.<br />Double click me.</div></div>');
+				if($(evt.item).parent().hasClass('sortable')){
+					if(active_element=='button'){
+						$(evt.item).replaceWith('<div class="element button" style="text-align:center;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil button_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link button_link" style="font-size:26px;margin:5px;"></span></div><a href="#" class="btn" style="padding:10px;padding-left:20px;padding-right:20px;background-color:#EEE;color:#000;text-decoration:none;">New button</a></div>');
+					} else if(active_element=='form'){
+						$(evt.item).replaceWith('<div class="element form"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil form_edit" style="font-size:26px;margin:5px;"></span></div><div class="form_content"></div><div class="form-group" style="text-align:center;"><a class="btn send_button" style="color:#000;background-color:#EEE;">Send</a></div></div>');
+					} else if(active_element=='grid'){
+						$(evt.item).replaceWith('<div class="element grid"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-columns column_settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-plus add_row" style="font-size:26px;margin:5px;"></span><span class="fa fa-minus remove_row" style="font-size:26px;margin:5px;"></span></div><div class="row"><div class="col-md-12 sortable" style="min-height:50px;"></div></div></div>');
+					} else if(active_element=='icon'){
+						$(evt.item).replaceWith('<div class="element icon" style="text-align:center;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil icon_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link icon_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><i class="fa fa-font-awesome" aria-hidden="true" style="font-size:50px;"></i></a></div>');
+						$('#iconModal').modal('show');
+						$('#design_area')[0].contentWindow.select_active_icon();
+					} else if(active_element=='image'){
+						$(evt.item).replaceWith('<div class="element image"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/blank.gif" class="img-responsive" /></a></div>');
+						image_edit();
+						$('#design_area')[0].contentWindow.select_active_element();
+					} else if(active_element=='slider'){
+						id = 1;
+						$("#design_area").contents().find('.slider').each(function(){
+							slider_tag_id = $(this).children('.carousel').attr('id').split('_');
+							if(slider_tag_id[1]>=id){
+								id = parseInt(slider_tag_id[1])+1;
+							}
+						});
+						$(evt.item).replaceWith('<div class="element slider"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div><div id="slider_'+id+'" class="carousel slide" data-ride="carousel" data-interval="false" style="min-height:100px;"><ol class="carousel-indicators"></ol><div class="carousel-inner" role="listbox"></div><a class="left carousel-control" href="#slider_'+id+'" role="button" data-slide="prev"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#slider_'+id+'" role="button" data-slide="next"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a></div></div>');
+					} else if(active_element=='text'){
+						$(evt.item).replaceWith('<div class="element text"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil text_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-check text_edit_done" style="font-size:26px;margin:5px;display:none;"></span></div><div class="editable" style="text-align:center;font-size:20px;" spellcheck="false">Text.<br />Double click me.</div></div>');
+					}
+					load_sortable();
 				}
-				load_sortable();
 			},
 		    onMove: function (evt) {
 				$('.place_holder').css('width','100%');
@@ -731,16 +736,16 @@ if(isset($_GET['p'])){
 						<h3 class="panel-title" style="color:#677888;">Column</h3>
 					</div>
 					<div class="panel-body" style="padding-left:5px;padding-right:5px;">
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_01.png" class="set_column" rel="1" style="margin:4px;border:1px solid #EEE;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_02.png" class="set_column" rel="2" style="margin:4px;border:1px solid #666;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_03.png" class="set_column" rel="3" style="margin:4px;border:1px solid #666;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_04.png" class="set_column" rel="4" style="margin:4px;border:1px solid #666;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_05.png" class="set_column" rel="5" style="margin:4px;border:1px solid #666;" /><br />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_06.png" class="set_column" rel="6" style="margin:4px;border:1px solid #666;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_07.png" class="set_column" rel="7" style="margin:4px;border:1px solid #666;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_08.png" class="set_column" rel="8" style="margin:4px;border:1px solid #666;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_09.png" class="set_column" rel="9" style="margin:4px;border:1px solid #666;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_10.png" class="set_column" rel="10" style="margin:4px;border:1px solid #666;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_01.png" class="set_column" rel="1" style="margin:4px;border:1px solid #666;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_02.png" class="set_column" rel="2" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_03.png" class="set_column" rel="3" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_04.png" class="set_column" rel="4" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_10.png" class="set_column" rel="10" style="margin:4px;border:1px solid #EEE;" /><br />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_05.png" class="set_column" rel="5" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_06.png" class="set_column" rel="6" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_07.png" class="set_column" rel="7" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_08.png" class="set_column" rel="8" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_09.png" class="set_column" rel="9" style="margin:4px;border:1px solid #EEE;" />
 						<div id="customize_layout" style="color:#677888;font-size:14px;margin-top:10px;text-align:center;"></div>
 					</div>
 				</div>
@@ -891,7 +896,8 @@ if(isset($_GET['p'])){
 				</div>
 			</div>
 			<div id="text_settings" style="display:none;">
-		    	<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+				<h3 class="panel-title" style="color:#677888;border-bottom:2px solid #677888;padding-bottom:10px;">Settings <i class="fa fa-times close_panel" style="font-size:20px;float:right;"></i></h3>
+		    	<div class="panel panel-default" style="border-radius:0;margin-top:10px;margin-bottom:10px;">
 					<div class="panel-heading">
 						<h3 class="panel-title" style="color:#677888;">Style</h3>
 					</div>

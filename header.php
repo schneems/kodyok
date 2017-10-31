@@ -89,7 +89,34 @@ if(!$menu_exists){
                     }
                 }
             });
+            $('#content_area').find('.text > div:last').each(function(){
+                if(loaded_fonts.indexOf($(this).css('font-family').split(',')[0].replace(/"/g,''))=='-1'){
+                    loaded_fonts.push($(this).css('font-family').split(',')[0].replace(/"/g,''));
+                    WebFont.load({
+                        google: {
+                            families: [$(this).css('font-family').split(',')[0].replace(/"/g,'')]
+                        }
+                    });
+                }
+            });
+            $(window).on('resize',function(){
+                refresh_height();
+            });
         });
+        function refresh_height(){
+            $("body").find('.dynamic_content > .row:first > div > div').height('auto');
+            $("body").find('.dynamic_content').each(function(){
+                last_height = 0;
+                $(this).children('.row').eq(0).children('div').each(function(){
+                    if(last_height<$(this).children('div').height()){
+                        last_height = $(this).children('div').height();
+                    }
+                });
+                $(this).children('.row').eq(0).children('div').each(function(){
+                    $(this).children('div').css('height',last_height+'px');
+                });
+            });
+        }
     </script>
     <?php
     if(isset($_GET['editor'])){
@@ -101,7 +128,7 @@ if(!$menu_exists){
         get_site_url = '<?php echo get_site_url();?>';
         $(document).ready(function(){
             $("body").on("click","a",function(e){
-                if($(this).attr('href')[0]!='#' && $(this).attr('target')!='_blank' && !$(this).attr('data-lightbox')){
+                if($(this).attr('href') && $(this).attr('href')[0]!='#' && $(this).attr('target')!='_blank' && !$(this).attr('data-lightbox')){
                     e.preventDefault();
                     window.open($(this).attr('href')+'?kodyok','_top');
                 }
@@ -169,7 +196,124 @@ if(!$menu_exists){
                     return false;
                 }
             });
+            $('.dynamic_content').each(function(){
+                active_element = $(this);
+                if($(this).attr('data-categories')){
+                    categories = $(this).attr('data-categories');
+                } else {
+                    categories = '';
+                }
+                if($(this).attr('data-tags')){
+                    tags = $(this).attr('data-tags');
+                } else {
+                    tags = '';
+                }
+                <?php
+                if(isset($_GET['editor'])){
+                ?>
+                set_content(categories,tags,0,1);
+                <?php
+                } else {
+                ?>
+                set_content(categories,tags,0,0);
+                <?php
+                }
+                ?>
+            });
+            $("body").on("click",".load_more",function(){
+                active_element = $(this).parent().parent().parent().parent();
+                if($(this).attr('data-categories')){
+                    categories = $(this).attr('data-categories');
+                } else {
+                    categories = '';
+                }
+                if($(this).attr('data-tags')){
+                    tags = $(this).attr('data-tags');
+                } else {
+                    tags = '';
+                }
+                <?php
+                if(isset($_GET['editor'])){
+                ?>
+                load_content(categories,tags,1);
+                <?php
+                } else {
+                ?>
+                load_content(categories,tags,0);
+                <?php
+                }
+                ?>
+            });
         });
+        function set_content(categories,tags,is_new,is_editor){
+            if(is_new==1){
+                active_element = $('.last_grid');
+            }
+            if(categories!=''){
+                $(active_element).attr('data-categories',categories);
+                json_url = 'categories='+categories;
+            }
+            if(tags!=''){
+                $(active_element).attr('data-tags',tags);
+                json_url = 'tags='+tags;
+            }
+            $.getJSON(get_site_url+'/?do=get_content&post_count=0&limit=8&'+json_url,function(data){
+                $.each(data,function(i){
+                    $(active_element).children('.row').children('div').eq(i).find('img').attr('src',data[i].image);
+                    $(active_element).children('.row').children('div').eq(i).find('.text').children('div').html(data[i].title);
+                    $(active_element).children('.row').children('div').eq(i).find('a').attr('href',data[i].link);
+                    if(is_editor==1){
+                        $(active_element).children('.row').children('div').eq(i).find('.text').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
+                    }
+                });
+                last_height = 0;
+                $(active_element).children('.row').eq(0).children('div').each(function(){
+                    if(last_height<$(this).children('div').height()){
+                        last_height = $(this).children('div').height();
+                    }
+                });
+                $(active_element).children('.row').eq(0).children('div').each(function(){
+                    $(this).children('div').css('height',last_height+'px');
+                });
+                if(is_editor==1){
+                    $(active_element).children('.element_panel').children('.settings').remove();
+                    $(active_element).children('.element_panel').children('.column_settings').remove();
+                    $(active_element).children('.element_panel').children('.add_row').remove();
+                    $(active_element).children('.element_panel').children('.remove_row').remove();
+                    $(active_element).children('.row').eq(1).children('div').children('.button').children('.element_panel').children('.duplicate').remove();
+                    $(active_element).children('.row').eq(1).children('div').children('.button').children('.element_panel').children('.remove').remove();
+                    $(active_element).children('.row').eq(1).children('div').children('.button').children('.element_panel').children('.button_link').remove();
+                }
+                if(is_new==1){
+                    $(active_element).addClass('dynamic_content');
+                    $(active_element).removeClass('last_grid');
+                }
+            });
+        }
+        function load_content(categories,tags,is_editor){
+            if(categories!=''){
+                json_url = 'categories='+categories;
+            }
+            if(tags!=''){
+                json_url = 'tags='+tags;
+            }
+            post_count = $(active_element).children('.row').first().children('div').length;
+            $.get(get_site_url+'/?do=get_content&post_count='+post_count+'&limit=4&'+json_url,function(data){
+                if(data.length==5){
+                    $(active_element).children('.row').last().hide();
+                } else {
+                    data = $.parseJSON(data);
+                    $.each(data,function(i){
+                        post_count = $(active_element).children('.row').first().children('div').length;
+                        $(active_element).children('.row').first().children('div').eq(post_count-1).clone().appendTo($(active_element).children('.row').first());
+                        $(active_element).children('.row').first().children('div').eq(post_count).find('img').attr('src',data[i].image);
+                        $(active_element).children('.row').first().children('div').eq(post_count).find('.text').children('div').last().html(data[i].title);
+                        $(active_element).children('.row').first().children('div').eq(post_count).find('a').attr('href',data[i].link);
+                    });
+                }
+            });
+            refresh_height();
+        }
     </script>
 </head>
 <body style="margin:0;padding:0;font-family:'Saira', sans-serif;">
@@ -196,7 +340,7 @@ if(!$menu_exists){
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#" style="padding:0;padding-left:15px;"><img src="<?php echo $logo;?>" height="50"></a>
+                <a class="navbar-brand" href="<?php echo get_site_url();?>" style="padding:0;padding-left:15px;"><img src="<?php echo $logo;?>" height="50"></a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right" data-menu-id="<?php echo $menu_id;?>">

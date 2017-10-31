@@ -208,12 +208,16 @@ function set_text_font(value,font_name){
 	WebFont.load({
 		google: {
 			families: [font_name]
+		},
+		active: function() {
+			$(active_element).children('div').last().css('font-family',value);
+			apply_to_all('text','font-family',value);
+			refresh_height();
 		}
 	});
-	$(active_element).children('div').last().css('font-family',value);
-	apply_to_all('text','font-family',value);
 }
 function set_text_size(value){
 	$(active_element).children('div').last().css('font-size',value);
 	apply_to_all('text','font-size',value);
+	refresh_height();
 }

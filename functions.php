@@ -33,13 +33,15 @@ if(isset($_GET['do'])){
     	if(isset($_GET['categories'])){
 	    	$categories = explode(',',$_GET['categories']);
 			$args = array(
-				'numberposts' => 6,
+				'numberposts' => $_GET['limit'],
+				'offset' => $_GET['post_count'],
 				'category__in' => $categories
 			);
 		} else if(isset($_GET['tags'])){
 			$tags = explode(',',$_GET['tags']);
 			$args = array(
-				'numberposts' => 6,
+				'numberposts' => $_GET['limit'],
+				'offset' => $_GET['post_count'],
 				'tag__in' => $tags
 			);
 		}
@@ -141,6 +143,7 @@ if(isset($_GET['do'])){
 				?>
 				<script type="text/javascript">
 			        parent.add_new_image(<?php echo $attachment_id;?>);
+			        window.location.href = '<?php echo get_site_url();?>/?do=upload_screen';
 			    </script>
 				<?php
 			}

@@ -89,11 +89,12 @@ function add_menu(value){
 		menu_sortable();
 	}
 }
-function update_menu_link(item_id,link){
+function update_menu_link(item_id,link,blank){
 	$('#content_menu_'+item_id+' > .menu_link',window.parent.document).attr('data-href',link);
 	$('nav').children('.container').children('.collapse').children('.nav').children('li').eq(item_id).children('a').attr('href',link);
 	target = '';
-	if(link.search('http://')>=0 || link.search('https://')>=0){
+	$('nav').children('.container').children('.collapse').children('.nav').children('li').eq(item_id).children('a').removeAttr('target');
+	if(blank==1){
 		$('nav').children('.container').children('.collapse').children('.nav').children('li').eq(item_id).children('a').attr('target','_blank');
 		target = '_blank';
 	}

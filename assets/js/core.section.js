@@ -38,8 +38,15 @@ $(document).ready(function(){
 			$('#iframe',window.parent.document).css('width',$('#all_content',window.parent.document).width()-380);
 			$('#settings_menu',window.parent.document).show();
 			$('#settings_menu > div',window.parent.document).hide();
-			$('#section_settings',window.parent.document).show();
-			get_section_settings();
+			if($(active_element).children('div').last().hasClass('slider')){
+				active_element = $(this).parent().next();
+				$('#slider_settings',window.parent.document).show();
+				$('#slider_settings > h3',window.parent.document).show();
+				get_slider_settings();
+			} else {
+				$('#section_settings',window.parent.document).show();
+				get_section_settings();
+			}
 		});
 	}
 });
@@ -166,14 +173,11 @@ function set_section_opacity(value){
 }
 function remove_background(){
 	$(active_element).css('background-color','transparent');
-	$(active_element).css('background-attachment','scroll');
 	$(active_element).css('background-image','none');
+	$(active_element).css('background-attachment','scroll');
+	$(active_element).css('background-size','cover');
 	$(active_element).css('background-position','center center');
 	$(active_element).css('background-repeat','no-repeat');
-	$(active_element).css('-webkit-background-size','cover');
-	$(active_element).css('-moz-background-size','cover');
-	$(active_element).css('background-size','cover');
-	$(active_element).css('-o-background-size','cover');
 }
 function add_id(value){
 	error = 0;
