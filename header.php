@@ -248,17 +248,26 @@ if(!$menu_exists){
                 json_url = 'tags='+tags;
             }
             $.getJSON(get_site_url+'/?do=get_content&post_count=0&limit=8&'+json_url,function(data){
+                text_align = $(active_element).find('.row:first > div:first > div > .text > div:last').css('text-align');
+                text_font = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('font-family');
+                text_size = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('font-size');
+                text_color = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('color');
+                $(active_element).find('.row:first > div').remove();
+                if($(active_element).children('.row:last').css('display')=='none'){
+                    $(active_element).children('.row:last').show();
+                }
+                if(data.length<8){
+                    $(active_element).children('.row:last').hide();
+                }
                 $.each(data,function(i){
                     if(!data[i].image){
                         data[i].image = get_stylesheet_directory_uri + '/assets/img/300x300.gif';
                     }
-                    $(active_element).children('.row').children('div').eq(i).find('img').attr('src',data[i].image);
-                    $(active_element).children('.row').children('div').eq(i).find('.text > div > a').html(data[i].title);
-                    $(active_element).children('.row').children('div').eq(i).find('a').attr('href',data[i].link);
-                    if(is_editor==1){
-                        $(active_element).children('.row').children('div').eq(i).find('.text').children('.element_panel').html('<span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span>');
-                    }
+                    $(active_element).children('.row:first').append('<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="margin-bottom:20px;"><div style="margin:10px auto;background-color:#FFF;max-width:300px;box-shadow:0 0 10px 1px #CCC;"><div class="image"><a href="'+data[i].link+'"><img src="'+data[i].image+'" class="img-responsive" style="margin-left:auto;margin-right:auto;"></a></div><div class="element text" style="margin:10px;"><div style="text-align:'+text_align+';"><a href="'+data[i].link+'" style=\'color:'+text_color+';text-decoration:none;font-size:'+text_size+';font-family:'+text_font+';\'>'+data[i].title+'</a></div></div></div></div>');
                 });
+                if(is_editor==1){
+                    $(active_element).find('.text').prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div>');
+                }
                 last_height = 0;
                 $(active_element).children('.row').eq(0).children('div').each(function(){
                     if(last_height<$(this).children('div').height()){
@@ -273,9 +282,9 @@ if(!$menu_exists){
                     $(active_element).children('.element_panel').children('.column_settings').remove();
                     $(active_element).children('.element_panel').children('.add_row').remove();
                     $(active_element).children('.element_panel').children('.remove_row').remove();
-                    $(active_element).children('.row').eq(1).children('div').children('.button').children('.element_panel').children('.duplicate').remove();
-                    $(active_element).children('.row').eq(1).children('div').children('.button').children('.element_panel').children('.remove').remove();
-                    $(active_element).children('.row').eq(1).children('div').children('.button').children('.element_panel').children('.button_link').remove();
+                    $(active_element).children('.row:last').children('div').children('.button').children('.element_panel').children('.duplicate').remove();
+                    $(active_element).children('.row:last').children('div').children('.button').children('.element_panel').children('.remove').remove();
+                    $(active_element).children('.row:last').children('div').children('.button').children('.element_panel').children('.button_link').remove();
                 }
                 if(is_new==1){
                     $(active_element).addClass('dynamic_content');
@@ -290,25 +299,27 @@ if(!$menu_exists){
             if(tags!=''){
                 json_url = 'tags='+tags;
             }
-            post_count = $(active_element).children('.row').first().children('div').length;
-            $.get(get_site_url+'/?do=get_content&post_count='+post_count+'&limit=4&'+json_url,function(data){
-                if(data.length==5){
+            $.get(get_site_url+'/?do=get_content&post_count='+$(active_element).children('.row').first().children('div').length+'&limit=4&'+json_url,function(data){
+                text_align = $(active_element).find('.row:first > div:first > div > .text > div:last').css('text-align');
+                text_font = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('font-family');
+                text_size = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('font-size');
+                text_color = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('color');
+                if(data.length==1){
                     $(active_element).children('.row').last().hide();
                 } else {
                     data = $.parseJSON(data);
                     $.each(data,function(i){
-                        post_count = $(active_element).children('.row').first().children('div').length;
-                        $(active_element).children('.row').first().children('div').eq(post_count-1).clone().appendTo($(active_element).children('.row').first());
                         if(!data[i].image){
                             data[i].image = get_stylesheet_directory_uri + '/assets/img/300x300.gif';
                         }
-                        $(active_element).children('.row').first().children('div').eq(post_count).find('img').attr('src',data[i].image);
-                        $(active_element).children('.row').first().children('div').eq(post_count).find('.text > div:last > a').html(data[i].title);
-                        $(active_element).children('.row').first().children('div').eq(post_count).find('a').attr('href',data[i].link);
+                        $(active_element).children('.row:first').append('<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="margin-bottom:20px;"><div style="margin:10px auto;background-color:#FFF;max-width:300px;box-shadow:0 0 10px 1px #CCC;"><div class="image"><a href="'+data[i].link+'"><img src="'+data[i].image+'" class="img-responsive" style="margin-left:auto;margin-right:auto;"></a></div><div class="element text" style="margin:10px;"><div style="text-align:'+text_align+';"><a href="'+data[i].link+'" style=\'color:'+text_color+';text-decoration:none;font-size:'+text_size+';font-family:'+text_font+';\'>'+data[i].title+'</a></div></div></div></div>');
                     });
+                    if(is_editor==1){
+                        $(active_element).find('.text').prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div>');
+                    }
+                    refresh_height();
                 }
             });
-            refresh_height();
         }
     </script>
 </head>

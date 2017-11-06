@@ -255,7 +255,7 @@ function run_before_save(post_page){
 	$("body").find('.dynamic_content').each(function(){
 		$(this).find('.row:first > div:gt(7)').remove();
 		refresh_height();
-		if($(this).find('.row:last').css('display')=='none'){
+		if($(this).find('.row:last').css('display')=='none' && $(this).find('.row:first > div').length==8){
 			$(this).find('.row:last').show();
 		}
 	});

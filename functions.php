@@ -60,7 +60,9 @@ if(isset($_GET['do'])){
 			}
 			$i++;
 		}
-		echo json_encode($new_posts);
+		if(isset($new_posts)){
+			echo json_encode($new_posts);
+		}
 		exit;
     } else if($_GET['do']=='remove_menu' && is_super_admin()){
     	wp_delete_post($_GET['id']);
