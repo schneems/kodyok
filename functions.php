@@ -27,9 +27,13 @@ if(isset($_GET['do'])){
 		wp_update_post($my_post);
 		add_post_meta($_GET['id'],'kodyok_content','1',true);
 		update_option('menu_style',stripslashes($_POST['menu']));
-		update_option('footer',stripslashes($_POST['footer']));
+		update_option('footer',stripslashes(trim($_POST['footer'])));
 		exit;
     } else if($_GET['do']=='get_content'){
+    	$args = array(
+			'numberposts' => $_GET['limit'],
+			'offset' => $_GET['post_count']
+		);
     	if(isset($_GET['categories'])){
 	    	$categories = explode(',',$_GET['categories']);
 			$args = array(
@@ -123,7 +127,7 @@ if(isset($_GET['do'])){
     } else if($_GET['do']=='get_image'){
     	echo wp_get_attachment_image_src($_GET['id'],$_GET['size'])[0];
     	exit;
-    } else if($_GET['do']=='upload_screen'){
+    } else if($_GET['do']=='upload_screen' && is_super_admin()){
     	?>
     	<body style="margin:0;padding:0;">
 	    	<form id="featured_upload" method="post" action="<?php echo get_site_url(); ?>/?do=upload_image" enctype="multipart/form-data" style="margin-bottom:0;">
@@ -135,7 +139,7 @@ if(isset($_GET['do'])){
 		</body>
     	<?php
     	exit;
-    } else if($_GET['do']=='upload_image'){
+    } else if($_GET['do']=='upload_image' && is_super_admin()){
 		if(isset($_POST['my_image_upload_nonce'],$_POST['post_id']) && wp_verify_nonce($_POST['my_image_upload_nonce'],'my_image_upload')){
 			require_once(ABSPATH.'wp-admin/includes/image.php');
 			require_once(ABSPATH.'wp-admin/includes/file.php');
@@ -161,10 +165,10 @@ if(isset($_GET['do'])){
 		$headers .= 'Content-type: text/html; charset=utf-8'."\r\n";
 		wp_mail(get_option('form_email'),'Contact Form',$message,$headers);
 		exit;
-    } else if($_GET['do']=='update_email'){
+    } else if($_GET['do']=='update_email' && is_super_admin()){
     	update_option('form_email',$_GET['email']);
     	exit;
-    } else if($_GET['do']=='save_seo'){
+    } else if($_GET['do']=='save_seo' && is_super_admin()){
     	add_post_meta($_GET['id'],'seo_settings',$_POST['seo_settings'],true);
     	exit;
     }

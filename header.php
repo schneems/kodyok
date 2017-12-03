@@ -19,6 +19,7 @@ if(!$menu_exists){
     $menu_id = $menu_exists->term_id;
 }
 ?>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -51,11 +52,11 @@ if(!$menu_exists){
     <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/style.css">
     <link href="<?php echo get_stylesheet_directory_uri();?>/assets/lightbox2/css/lightbox.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Saira" media="all">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Montserrat" media="all">
     <script type="text/javascript">
         get_stylesheet_directory_uri = '<?php echo get_stylesheet_directory_uri();?>';
         get_site_url = '<?php echo get_site_url();?>';
-        loaded_fonts = [];
+        loaded_fonts = ['Montserrat'];
         $(document).ready(function(){
             if($('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('font-family')){
                 if(loaded_fonts.indexOf($('nav').children('.container').children('.collapse').children('.nav').children('li').children('a').css('font-family').split(',')[0].replace(/"/g,''))=='-1'){
@@ -67,7 +68,7 @@ if(!$menu_exists){
                     });
                 }
             }
-            $('a').each(function(){
+            $('#content_area').find('a').each(function(){
                 if(loaded_fonts.indexOf($(this).css('font-family').split(',')[0].replace(/"/g,''))=='-1'){
                     loaded_fonts.push($(this).css('font-family').split(',')[0].replace(/"/g,''));
                     WebFont.load({
@@ -77,36 +78,18 @@ if(!$menu_exists){
                     });
                 }
             });
-            $('font').each(function(){
-                if($(this).attr('face')){
-                    if(loaded_fonts.indexOf($(this).attr('face').split(',')[0])=='-1'){
-                        loaded_fonts.push($(this).attr('face').split(',')[0]);
-                        WebFont.load({
-                            google: {
-                                families: [$(this).attr('face').split(',')[0]]
-                            }
-                        });
-                    }
+            $('#content_area').find('span').each(function(){
+                if(loaded_fonts.indexOf($(this).css('font-family').split(',')[0].replace(/"/g,''))=='-1'){
+                    loaded_fonts.push($(this).css('font-family').split(',')[0].replace(/"/g,''));
+                    WebFont.load({
+                        google: {
+                            families: [$(this).css('font-family').split(',')[0].replace(/"/g,'')]
+                        }
+                    });
                 }
             });
-            $(window).on('resize',function(){
-                refresh_height();
-            });
+            $('#author,#email,#url').addClass('form-control');
         });
-        function refresh_height(){
-            $("body").find('.dynamic_content > .row:first > div > div').height('auto');
-            $("body").find('.dynamic_content').each(function(){
-                last_height = 0;
-                $(this).children('.row').eq(0).children('div').each(function(){
-                    if(last_height<$(this).children('div').height()){
-                        last_height = $(this).children('div').height();
-                    }
-                });
-                $(this).children('.row').eq(0).children('div').each(function(){
-                    $(this).children('div').css('height',last_height+'px');
-                });
-            });
-        }
     </script>
     <?php
     if(isset($_GET['editor'])){
@@ -114,8 +97,6 @@ if(!$menu_exists){
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/colpick.js"></script>
     <link href="<?php echo get_stylesheet_directory_uri();?>/assets/css/colpick.css" rel="stylesheet" type="text/css">
     <script type="text/javascript">
-        get_stylesheet_directory_uri = '<?php echo get_stylesheet_directory_uri();?>';
-        get_site_url = '<?php echo get_site_url();?>';
         $(document).ready(function(){
             $("body").on("click","a",function(e){
                 if($(this).attr('href') && $(this).attr('href')[0]!='#' && $(this).attr('target')!='_blank' && !$(this).attr('data-lightbox')){
@@ -143,6 +124,7 @@ if(!$menu_exists){
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/core.section.js"></script>
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/core.slider.js"></script>
     <script type="text/javascript" src="<?php echo get_stylesheet_directory_uri();?>/assets/js/core.text.js"></script>
+    <script type="text/javascript" src="<?php echo includes_url();?>js/tinymce/tinymce.min.js"></script>
     <style type="text/css">
         .place_holder { width:100%;height:10px;background:#00ccff;margin-top:10px;margin-bottom:10px;}
     </style>
@@ -239,44 +221,43 @@ if(!$menu_exists){
             if(is_new==1){
                 active_element = $('.last_grid');
             }
+            json_url = '';
             if(categories!=''){
                 $(active_element).attr('data-categories',categories);
-                json_url = 'categories='+categories;
+                json_url = '&categories='+categories;
             }
             if(tags!=''){
                 $(active_element).attr('data-tags',tags);
-                json_url = 'tags='+tags;
+                json_url = '&tags='+tags;
             }
-            $.getJSON(get_site_url+'/?do=get_content&post_count=0&limit=8&'+json_url,function(data){
-                text_align = $(active_element).find('.row:first > div:first > div > .text > div:last').css('text-align');
-                text_font = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('font-family');
-                text_size = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('font-size');
-                text_color = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('color');
+            $.getJSON(get_site_url+'/?do=get_content&post_count=0&limit=6'+json_url,function(data){
+                if($(active_element).find('.row:first > div').length==0){
+                    text_align = 'center';
+                    text_font = 'Montserrat, sans-serif';
+                    text_size = '18px';
+                    text_color = '#666';
+                } else {
+                    text_align = $(active_element).find('.row:first > div:first > div > .text > div:last').css('text-align');
+                    text_font = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('font-family');
+                    text_size = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('font-size');
+                    text_color = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('color');
+                }
                 $(active_element).find('.row:first > div').remove();
                 if($(active_element).children('.row:last').css('display')=='none'){
                     $(active_element).children('.row:last').show();
                 }
-                if(data.length<8){
+                if(data.length<6){
                     $(active_element).children('.row:last').hide();
                 }
                 $.each(data,function(i){
                     if(!data[i].image){
                         data[i].image = get_stylesheet_directory_uri + '/assets/img/300x300.gif';
                     }
-                    $(active_element).children('.row:first').append('<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="margin-bottom:20px;"><div style="margin:10px auto;background-color:#FFF;max-width:300px;box-shadow:0 0 10px 1px #CCC;"><div class="image"><a href="'+data[i].link+'"><img src="'+data[i].image+'" class="img-responsive" style="margin-left:auto;margin-right:auto;"></a></div><div class="element text" style="margin:10px;"><div style="text-align:'+text_align+';"><a href="'+data[i].link+'" style=\'color:'+text_color+';text-decoration:none;font-size:'+text_size+';font-family:'+text_font+';\'>'+data[i].title+'</a></div></div></div></div>');
+                    $(active_element).children('.row:first').append('<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12" style="margin-bottom:20px;display:flex;flex-direction:column;"><div style="margin:10px auto;background-color:#FFF;max-width:300px;box-shadow:0 0 30px #DDD;height:100%;border-radius:5px;"><div class="image" style="border-top-left-radius:5px;border-top-right-radius:5px;overflow:hidden;"><a href="'+data[i].link+'"><img src="'+data[i].image+'" alt="'+data[i].title.replace(/'/g,"").replace(/"/g,"")+'" class="img-responsive"></a></div><div class="element text" style="margin:20px;"><div style="text-align:'+text_align+';"><a href="'+data[i].link+'" style=\'color:'+text_color+';text-decoration:none;font-size:'+text_size+';font-family:'+text_font+';\'>'+data[i].title+'</a></div></div></div></div>');
                 });
                 if(is_editor==1){
                     $(active_element).find('.text').prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div>');
                 }
-                last_height = 0;
-                $(active_element).children('.row').eq(0).children('div').each(function(){
-                    if(last_height<$(this).children('div').height()){
-                        last_height = $(this).children('div').height();
-                    }
-                });
-                $(active_element).children('.row').eq(0).children('div').each(function(){
-                    $(this).children('div').css('height',last_height+'px');
-                });
                 if(is_editor==1){
                     $(active_element).children('.element_panel').children('.settings').remove();
                     $(active_element).children('.element_panel').children('.column_settings').remove();
@@ -299,7 +280,7 @@ if(!$menu_exists){
             if(tags!=''){
                 json_url = 'tags='+tags;
             }
-            $.get(get_site_url+'/?do=get_content&post_count='+$(active_element).children('.row').first().children('div').length+'&limit=4&'+json_url,function(data){
+            $.get(get_site_url+'/?do=get_content&post_count='+$(active_element).children('.row').first().children('div').length+'&limit=3&'+json_url,function(data){
                 text_align = $(active_element).find('.row:first > div:first > div > .text > div:last').css('text-align');
                 text_font = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('font-family');
                 text_size = $(active_element).find('.row:first > div:first > div > .text > div:last > a').css('font-size');
@@ -312,18 +293,20 @@ if(!$menu_exists){
                         if(!data[i].image){
                             data[i].image = get_stylesheet_directory_uri + '/assets/img/300x300.gif';
                         }
-                        $(active_element).children('.row:first').append('<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="margin-bottom:20px;"><div style="margin:10px auto;background-color:#FFF;max-width:300px;box-shadow:0 0 10px 1px #CCC;"><div class="image"><a href="'+data[i].link+'"><img src="'+data[i].image+'" class="img-responsive" style="margin-left:auto;margin-right:auto;"></a></div><div class="element text" style="margin:10px;"><div style="text-align:'+text_align+';"><a href="'+data[i].link+'" style=\'color:'+text_color+';text-decoration:none;font-size:'+text_size+';font-family:'+text_font+';\'>'+data[i].title+'</a></div></div></div></div>');
+                        $(active_element).children('.row:first').append('<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12" style="margin-bottom:20px;display:flex;flex-direction:column;"><div style="margin:10px auto;background-color:#FFF;max-width:300px;box-shadow:0 0 30px #DDD;height:100%;border-radius:5px;"><div class="image" style="border-top-left-radius:5px;border-top-right-radius:5px;overflow:hidden;"><a href="'+data[i].link+'"><img src="'+data[i].image+'" alt="'+data[i].title.replace(/'/g,"").replace(/"/g,"")+'" class="img-responsive"></a></div><div class="element text" style="margin:20px;"><div style="text-align:'+text_align+';"><a href="'+data[i].link+'" style=\'color:'+text_color+';text-decoration:none;font-size:'+text_size+';font-family:'+text_font+';\'>'+data[i].title+'</a></div></div></div></div>');
                     });
                     if(is_editor==1){
                         $(active_element).find('.text').prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div>');
                     }
-                    refresh_height();
                 }
             });
         }
     </script>
+    <style type="text/css">
+        .dynamic_content > .row:first-child:before,.dynamic_content > .row:first-child:after { content:normal;}
+    </style>
 </head>
-<body style="margin:0;padding:0;font-family:'Saira', sans-serif;">
+<body style="margin:0;padding:0;font-family:'Montserrat', sans-serif;">
     <?php
     if(get_option('menu_style')){
         $menu_style = json_decode(get_option('menu_style'));
@@ -347,7 +330,7 @@ if(!$menu_exists){
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="<?php echo get_site_url();?>" style="padding:0;padding-left:15px;"><img src="<?php echo $logo;?>" height="50"></a>
+                <a class="navbar-brand" href="<?php echo get_site_url();?>" style="padding:0;padding-left:15px;"><img src="<?php echo $logo;?>" alt="Logo" height="50"></a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right" data-menu-id="<?php echo $menu_id;?>">

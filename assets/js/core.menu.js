@@ -107,7 +107,7 @@ function remove_menu_link(item_id){
 }
 function get_menu_settings(){
 	active_element = $('nav');
-	$('#iframe',window.parent.document).css('width',$('#all_content',window.parent.document).width()-380);
+	$('#iframe',window.parent.document).css('width',($('#all_content',window.parent.document).width()-380)+'px');
 	$('#settings_menu',window.parent.document).show();
 	$('#settings_menu > div',window.parent.document).hide();
 	$('#menu_settings',window.parent.document).show();

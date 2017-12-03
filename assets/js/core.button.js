@@ -104,5 +104,5 @@ function set_button_font(value,font_name){
 	$(active_element).children('a').css('font-family',value);
 }
 function set_button_size(value){
-	$(active_element).children('a').css('font-size',value);
+	$(active_element).children('a').css('font-size',value+'px');
 }

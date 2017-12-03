@@ -18,6 +18,14 @@ $(document).ready(function(){
     		$('#grid_settings',window.parent.document).show();
 		} else if($(active_element).hasClass('icon')){
     		$('#icon_settings',window.parent.document).show();
+    		$('#icon_color',window.parent.document).show();
+    		$('#icon_background_color',window.parent.document).hide();
+		} else if($(active_element).hasClass('social_icons')){
+			get_social_icons_settings();
+			$('#icon_settings',window.parent.document).show();
+    		$('#social_icons_settings',window.parent.document).show();
+    		$('#icon_color',window.parent.document).hide();
+    		$('#icon_background_color',window.parent.document).show();
 		} else if($(active_element).hasClass('image')){
 			get_image_settings();
     		$('#image_settings',window.parent.document).show();
@@ -35,7 +43,7 @@ $(document).ready(function(){
 		$('#bottom_margin',window.parent.document).val($(active_element).css('margin-bottom'));
 		$('#left_margin',window.parent.document).val($(active_element).css('margin-left'));
 		$('#right_margin',window.parent.document).val($(active_element).css('margin-right'));
-		$('#iframe',window.parent.document).css('width',$('#all_content',window.parent.document).width()-380);
+		$('#iframe',window.parent.document).css('width',($('#all_content',window.parent.document).width()-380)+'px');
 		$('#settings_menu',window.parent.document).show();
 	});
 	$("body").on("click",".remove",function(){
@@ -56,6 +64,8 @@ $(document).ready(function(){
 			$(this).parent().parent().next().children('.carousel').attr('id','slider_'+id);
 			$(this).parent().parent().next().children('.carousel').children('.carousel-indicators').children('li').attr('data-target','#slider_'+id);
 			$(this).parent().parent().next().children('.carousel').children('a').attr('href','#slider_'+id);
+		} else if($(this).parent().parent().hasClass('text')){
+			$(this).parent().parent().next().find('.editable').removeAttr('id');
 		}
 	});
 	$("body").on("mouseenter",".element",function(){
@@ -65,11 +75,11 @@ $(document).ready(function(){
 		if($(this).hasClass('grid')){
 			$(this).children('.row').children('div').css('box-shadow','inset 0 0 0 1px #ffcc00');
 			$(this).children('.element_panel').css('background-color','rgba(255,204,0,0.8)');
-			$(this).children('.element_panel').css('margin-top','-'+$(this).children('.element_panel').height());
+			$(this).children('.element_panel').css('margin-top','-'+$(this).children('.element_panel').css('height'));
 		} else {
 			$(this).css('box-shadow','inset 0 0 0 1px #00ccff');
 			$(this).children('.element_panel').css('background-color','rgba(0,204,255,0.8)');
-			$(this).children('.element_panel').css('margin-top',$(this).height());
+			$(this).children('.element_panel').css('margin-top',$(this).css('height'));
 		}
 		$(this).children('.element_panel').css('width',$(this).css('width'));
 		if($(this).hasClass('text')){
@@ -100,14 +110,15 @@ function load_element_panel(){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil form_edit" style="font-size:26px;margin:5px;"></span></div>');
 			} else if($(this).hasClass('grid')){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-columns column_settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-plus add_row" style="font-size:26px;margin:5px;"></span><span class="fa fa-minus remove_row" style="font-size:26px;margin:5px;"></span></div>');
-				if($(this).hasClass('dynamic_content')){
-					$(this).children('.element_panel').children('.settings').remove();
+				if($(this).hasClass('dynamic_content') || $(this).hasClass('gallery')){
 					$(this).children('.element_panel').children('.column_settings').remove();
 					$(this).children('.element_panel').children('.add_row').remove();
 					$(this).children('.element_panel').children('.remove_row').remove();
 				}
 			} else if($(this).hasClass('icon')){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil icon_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link icon_link" style="font-size:26px;margin:5px;"></span></div>');
+			} else if($(this).hasClass('social_icons')){
+				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span></div>');
 			} else if($(this).hasClass('image')){
 				$(this).prepend('<div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div>');
 				image_resizable($(this));
@@ -132,19 +143,7 @@ function update_link(link,blank){
 			}
 		}
 		document.execCommand('createLink',false,link);
-	} else if($(active_element).hasClass('image')){
-		$(active_element).children('a').attr('href',link);
-		$(active_element).children('a').removeAttr('target');
-		if(blank==1){
-			$(active_element).children('a').attr('target','_blank');
-		}
-	} else if($(active_element).hasClass('button')){
-		$(active_element).children('a').attr('href',link);
-		$(active_element).children('a').removeAttr('target');
-		if(blank==1){
-			$(active_element).children('a').attr('target','_blank');
-		}
-	} else if($(active_element).hasClass('icon')){
+	} else if($(active_element).hasClass('image') || $(active_element).hasClass('button') || $(active_element).hasClass('icon')){
 		$(active_element).children('a').attr('href',link);
 		$(active_element).children('a').removeAttr('target');
 		if(blank==1){
@@ -184,6 +183,8 @@ function set_align(value){
 	if($(active_element).hasClass('button')){
 		$(active_element).css('text-align',value);
 	} else if($(active_element).hasClass('icon')){
+		$(active_element).css('text-align',value);
+	} else if($(active_element).hasClass('social_icons')){
 		$(active_element).css('text-align',value);
 	} else if($(active_element).hasClass('image')){
 		if($(active_element).hasClass('image_in_text')){
@@ -254,8 +255,7 @@ function run_before_save(post_page){
 	$('.button').find('a').removeAttr('contenteditable');
 	$("body").find('.dynamic_content').each(function(){
 		$(this).find('.row:first > div:gt(7)').remove();
-		refresh_height();
-		if($(this).find('.row:last').css('display')=='none' && $(this).find('.row:first > div').length==8){
+		if($(this).find('.row:last').css('display')=='none' && $(this).find('.row:first > div').length==6){
 			$(this).find('.row:last').show();
 		}
 	});

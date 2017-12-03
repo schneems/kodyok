@@ -5,6 +5,7 @@ if(isset($_GET['p'])){
 	$id = get_the_ID();
 }
 ?>
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
@@ -23,15 +24,15 @@ if(isset($_GET['p'])){
 	<link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet_directory_uri();?>/assets/swal/sweetalert.css">
 	<script type="text/javascript">
 	$(document).ready(function(){
-		$('#iframe').css('width',$('#all_content').width()-80);
-		$('#settings_menu').css('left',$('#all_content').width()-300);
+		$('#iframe').css('width',($('#all_content').width()-80)+'px');
+		$('#settings_menu').css('left',($('#all_content').width()-300)+'px');
 		$(window).on('resize',function(){
 			if($('#settings_menu').css('display')=='none'){
-				$('#iframe').css('width',$('#all_content').width()-80);
+				$('#iframe').css('width',($('#all_content').width()-80)+'px');
 			} else {
-				$('#iframe').css('width',$('#all_content').width()-380);
+				$('#iframe').css('width',($('#all_content').width()-380)+'px');
 			}
-			$('#settings_menu').css('left',$('#all_content').width()-300);
+			$('#settings_menu').css('left',($('#all_content').width()-300)+'px');
 		});
 		$("#save").click(function(){
 			if($("#design_area").contents().find('#post_content_area').length==1){
@@ -66,7 +67,7 @@ if(isset($_GET['p'])){
 			return false;
 		});
 		$('.open_window').click(function(){
-			if($('#'+$(this).children('a').attr('rel')+'_menu').css('display')=='none'){
+			if($('#'+$(this).children('a').attr('id')+'_menu').css('display')=='none'){
 				$('.open_window').addClass('left_menu_icon');
 				$(this).removeClass('left_menu_icon');
 				$('.open_window').css('background-color','');
@@ -74,12 +75,12 @@ if(isset($_GET['p'])){
 				$('.open_window > a').css('color','#677888');
 				$(this).children('a').css('color','#000');
 				$('#add_menu').css('display','none');
-				$('#'+$(this).children('a').attr('rel')+'_menu').css('display','');
+				$('#'+$(this).children('a').attr('id')+'_menu').css('display','');
 			} else {
 				$('.open_window').addClass('left_menu_icon');
 				$('.open_window').css('background-color','');
 				$('.open_window > a').css('color','#677888');
-				$('#'+$(this).children('a').attr('rel')+'_menu').css('display','none');
+				$('#'+$(this).children('a').attr('id')+'_menu').css('display','none');
 			}
 		});
 		$('#add_list').change(function(){
@@ -93,7 +94,7 @@ if(isset($_GET['p'])){
 		});
 		$.getJSON('<?php echo get_stylesheet_directory_uri();?>/sections/list.json',function(data){
 			$.each(data.sections,function(i){
-				$('#ready_made').append('<div class="add_section" data-section-name="'+data.sections[i]['file']+'" style="text-align:center;cursor:pointer;font-size:10px;margin-bottom:10px;box-shadow:inset 0 0 0 1px #EEE;"><img src="<?php echo get_stylesheet_directory_uri();?>/sections/'+data.sections[i]['file']+'.gif" style="width:100%;" /><br />'+data.sections[i]['name']+'</div>');
+				$('#ready_made').append('<div class="add_section" data-section-name="'+data.sections[i]['file']+'" style="text-align:center;cursor:pointer;font-size:10px;margin-bottom:10px;box-shadow:inset 0 0 0 1px #EEE;"><img src="<?php echo get_stylesheet_directory_uri();?>/sections/'+data.sections[i]['file']+'.gif" alt="'+data.sections[i]['name']+'" style="width:100%;" /><br />'+data.sections[i]['name']+'</div>');
 			});
 		});
 	    $("body").on("click",".select",function(){
@@ -106,7 +107,7 @@ if(isset($_GET['p'])){
 			});
 		});
 		$("#select_image").click(function(){
-			$('#design_area')[0].contentWindow.update_image(selected_image,selected_image_id);
+			$('#design_area')[0].contentWindow.update_image(selected_image,selected_image_id,image_type);
 			$('#imageModal').modal('hide');
 		});
 		$("body").on("input","#icon_search",function(){
@@ -145,6 +146,8 @@ if(isset($_GET['p'])){
 					$('#design_area')[0].contentWindow.change_grid_background('rgba('+rgb['r']+','+rgb['g']+','+rgb['b']+','+$('#grid_opacity').val()/100+')');
 				} else if($(el).attr('data-type')=='icon'){
 					$('#design_area')[0].contentWindow.change_icon_color('#'+hex);
+				} else if($(el).attr('data-type')=='icon_background'){
+					$('#design_area')[0].contentWindow.change_icon_background_color('#'+hex);
 				} else if($(el).attr('data-type')=='image_border'){
 					$('#design_area')[0].contentWindow.change_image_border('#'+hex);
 				} else if($(el).attr('data-type')=='menu_background'){
@@ -164,11 +167,11 @@ if(isset($_GET['p'])){
 			$(this).colpickSetColor(this.value);
 		});
 		$("body").on("click",".set_button_opacity",function(){
-			opacity_value = $('#design_area')[0].contentWindow.set_button_opacity($(this).attr('rel'));
+			opacity_value = $('#design_area')[0].contentWindow.set_button_opacity($(this).attr('data-type'));
 			$('#button_opacity').val(opacity_value);
 		});
 		$("body").on("click",".set_button_border",function(){
-			border_value = $('#design_area')[0].contentWindow.set_button_border($(this).attr('rel'));
+			border_value = $('#design_area')[0].contentWindow.set_button_border($(this).attr('data-type'));
 			$('#button_border').val(border_value);
 		});
 		$("#button_change_font").change(function(){
@@ -192,13 +195,13 @@ if(isset($_GET['p'])){
 			}
 		});
 		$("body").on("click",".set_grid_opacity",function(){
-			opacity_value = $('#design_area')[0].contentWindow.set_grid_opacity($(this).attr('rel'));
+			opacity_value = $('#design_area')[0].contentWindow.set_grid_opacity($(this).attr('data-type'));
 			$('#grid_opacity').val(opacity_value);
 		});
 		$("body").on("click",".set_column",function(){
 			$('.set_column').css('border','1px solid #EEE');
 			$(this).css('border','1px solid #666');
-			set_column = $('#design_area')[0].contentWindow.set_column($(this).attr('rel'));
+			set_column = $('#design_area')[0].contentWindow.set_column($(this).attr('data-type'));
 			$('#customize_layout').html(set_column);
 		});
 		$("body").on("click",".remove_grid_background",function(){
@@ -208,18 +211,18 @@ if(isset($_GET['p'])){
 			$('#design_area')[0].contentWindow.remove_last_image();
 		});
 		$("body").on("click",".set_image_border",function(){
-			border_value = $('#design_area')[0].contentWindow.set_image_border($(this).attr('rel'));
+			border_value = $('#design_area')[0].contentWindow.set_image_border($(this).attr('data-type'));
 			$('#image_border').val(border_value);
 		});
 		$("body").on("click",".set_shape",function(){
-			$('#design_area')[0].contentWindow.set_shape($(this).attr('rel'));
+			$('#design_area')[0].contentWindow.set_shape($(this).attr('data-type'));
 		});
 		$("body").on("click",".set_align",function(){
-			$('#design_area')[0].contentWindow.set_align($(this).attr('rel'));
+			$('#design_area')[0].contentWindow.set_align($(this).attr('data-type'));
 		});
 		$("body").on("click",".set_margin",function(){
-			margin_side = $(this).attr('rel').split('_');
-			margin_value = $('#design_area')[0].contentWindow.set_margin($(this).attr('rel'));
+			margin_side = $(this).attr('data-type').split('_');
+			margin_value = $('#design_area')[0].contentWindow.set_margin($(this).attr('data-type'));
 			$('#'+margin_side[0]+'_margin').val(margin_value);
 		});
 		$("#menu_change_font").change(function(){
@@ -227,17 +230,8 @@ if(isset($_GET['p'])){
 				$('#design_area')[0].contentWindow.set_menu_font($("#menu_change_font").val(),$("#menu_change_font > option:selected").text());
 			}
 		});
-		$("body").on("click","#menu_change_font",function(){
-			$('#design_area')[0].contentWindow.get_font_list();
-		});
-		$("body").on("click","#button_change_font",function(){
-			$('#design_area')[0].contentWindow.get_font_list();
-		});
-		$("body").on("click","#text_change_font",function(){
-			$('#design_area')[0].contentWindow.get_font_list();
-		});
 		$("body").on("click",".set_menu_opacity",function(){
-			opacity_value = $('#design_area')[0].contentWindow.set_menu_opacity($(this).attr('rel'));
+			opacity_value = $('#design_area')[0].contentWindow.set_menu_opacity($(this).attr('data-type'));
 			$('#menu_opacity').val(opacity_value);
 		});
 		$("body").on("click",".image_edit",function(){
@@ -259,7 +253,7 @@ if(isset($_GET['p'])){
 			$('#design_area')[0].contentWindow.add_menu(menu_id);
 		});
 		$("body").on("click",".set_section_opacity",function(){
-			$('#design_area')[0].contentWindow.set_section_opacity($(this).attr('rel'));
+			$('#design_area')[0].contentWindow.set_section_opacity($(this).attr('data-type'));
 		});
 		$("body").on("click",".remove_background",function(){
 			$('#design_area')[0].contentWindow.remove_background();
@@ -314,22 +308,28 @@ if(isset($_GET['p'])){
 					}
 				}
 				if(link!=''){
-					if(menu_item_id==''){
-						$('#design_area')[0].contentWindow.update_link(link,blank);
-					} else {
+					if(menu_item_id!=''){
 						$('#design_area')[0].contentWindow.update_menu_link(menu_item_id,link,blank);
 						menu_item_id = '';
+					} else if(icon_item_id!=''){
+						$('#design_area')[0].contentWindow.update_icon_link(icon_item_id,link,blank);
+						icon_item_id = '';
+					} else {
+						$('#design_area')[0].contentWindow.update_link(link,blank);
 					}
 					$('#linkModal').modal('hide');
 				}
 			}
 		});
 		$("#remove_link").click(function(){
-			if(menu_item_id==''){
-				$('#design_area')[0].contentWindow.remove_link();
-			} else {
+			if(menu_item_id!=''){
 				$('#design_area')[0].contentWindow.remove_menu_link(menu_item_id);
 				menu_item_id = '';
+			} else if(icon_item_id!=''){
+				$('#design_area')[0].contentWindow.remove_icon_link(icon_item_id);
+				icon_item_id = '';
+			} else {
+				$('#design_area')[0].contentWindow.remove_link();
 			}
 			$('#linkModal').modal('hide');
 		});
@@ -353,7 +353,7 @@ if(isset($_GET['p'])){
 			$('#linkModal').modal('show');
 		});
 		$("body").on("click",".set_icon_size",function(){
-			icon_size = $('#design_area')[0].contentWindow.set_icon_size($(this).attr('rel'));
+			icon_size = $('#design_area')[0].contentWindow.set_icon_size($(this).attr('data-type'));
 			$('#icon_size').val(icon_size);
 		});
 		form_id = '';
@@ -404,6 +404,8 @@ if(isset($_GET['p'])){
 			$('#link_section').parent().hide();
 			$('#link_page').parent().hide();
 			$('#link_url').parent().hide();
+			menu_item_id = '';
+			icon_item_id = '';
 		});
 		$("body").on("click","#set_content",function(){
 			i = 0;
@@ -435,11 +437,11 @@ if(isset($_GET['p'])){
 		});
 		$(".close_panel").click(function(){
 			$('#settings_menu > div').hide();
-			$('#iframe').css('width',$('#all_content').width()-80);
+			$('#iframe').css('width',($('#all_content').width()-80)+'px');
 			$('#settings_menu').hide();
 		});
 		$("body").on("click",".set_slider_height",function(){
-			slider_height = $('#design_area')[0].contentWindow.set_slider_height($(this).attr('rel'));
+			slider_height = $('#design_area')[0].contentWindow.set_slider_height($(this).attr('data-type'));
 			$('#slider_height').val(slider_height);
 		});
 		$("#save_seo").click(function(){
@@ -460,6 +462,47 @@ if(isset($_GET['p'])){
 				}
 			});
 			return false;
+		});
+		$('#content_type').change(function(){
+			if($(this).val()=='categories'){
+				$('#content_tags').find('input').attr('checked',false);
+				$('#content_tags').hide();
+				$('#content_categories').show();
+			} else if($(this).val()=='tags'){
+				$('#content_categories').find('input').attr('checked',false);
+				$('#content_categories').hide();
+				$('#content_tags').show();
+			}
+		});
+		$('#contentModal').on('hidden.bs.modal',function(){
+			$("#design_area").contents().find('.last_grid').parent().parent().remove();
+		});
+		$("body").on("click",".add_icon",function(){
+			if($("#social_icon").val()!=0){
+				$('#design_area')[0].contentWindow.add_icon($('#social_icon').val(),$('#social_icon > option[value='+$('#social_icon').val()+']').attr('data-color'));
+			}
+		});
+		$("body").on("click",".remove_icon",function(){
+			$('#design_area')[0].contentWindow.remove_icon($(this).parent().index());
+			$(this).parent().remove();
+		});
+		icon_item_id = '';
+		$('body').on('click','.icon_link',function(){
+			icon_item_id = $(this).parent().index().toString();
+			current_link = $('#design_area')[0].contentWindow.get_href($(this).parent().index());
+			$('#design_area')[0].contentWindow.update_section_list();
+			if(current_link!='#'){
+				if($('option[value="'+current_link+'"]').length==1){
+					$('#link_type').val($('option[value="'+current_link+'"]').parent().attr('id').split('_')[1]);
+					$('#link_'+$('option[value="'+current_link+'"]').parent().attr('id').split('_')[1]).val(current_link);
+					$('#link_'+$('option[value="'+current_link+'"]').parent().attr('id').split('_')[1]).parent().show();
+				} else {
+					$('#link_type').val('url');
+					$('#link_url').val(current_link);
+					$('#link_url').parent().show();
+				}
+			}
+			$('#linkModal').modal('show');
 		});
 	});
 	function load_add_section_drag(){
@@ -507,6 +550,8 @@ if(isset($_GET['p'])){
 					load_add_item_drag();
 					if(active_section=='blog'){
 						$('#contentModal').modal('show');
+						$('#content_categories').find('input').attr('checked',false);
+						$('#content_tags').find('input').attr('checked',false);
 					}
 				});
 			},
@@ -541,9 +586,9 @@ if(isset($_GET['p'])){
 				$('#design_area').contents().find('.grid').css('padding-bottom','0');
 				if($(evt.item).parent().hasClass('sortable')){
 					if(active_element=='button'){
-						$(evt.item).replaceWith('<div class="element button" style="text-align:center;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil button_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link button_link" style="font-size:26px;margin:5px;"></span></div><a href="#" class="btn" style="padding:10px;padding-left:20px;padding-right:20px;background-color:#EEE;color:#000;text-decoration:none;">New button</a></div>');
+						$(evt.item).replaceWith('<div class="element button" style="text-align:center;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil button_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link button_link" style="font-size:26px;margin:5px;"></span></div><a href="#" class="btn" style="padding:10px 20px;background-color:#EEE;color:#000;text-decoration:none;">New button</a></div>');
 					} else if(active_element=='form'){
-						$(evt.item).replaceWith('<div class="element form"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil form_edit" style="font-size:26px;margin:5px;"></span></div><div class="form_content"></div><div class="form-group" style="text-align:center;"><a class="btn send_button" style="color:#000;background-color:#EEE;">Send</a></div></div>');
+						$(evt.item).replaceWith('<div class="element form"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil form_edit" style="font-size:26px;margin:5px;"></span></div><div class="form_content"></div><div class="form-group" style="text-align:center;"><a class="btn send_button" style="padding:10px 20px;color:#000;background-color:#EEE;">Send</a></div></div>');
 					} else if(active_element=='grid'){
 						$(evt.item).replaceWith('<div class="element grid"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-columns column_settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-plus add_row" style="font-size:26px;margin:5px;"></span><span class="fa fa-minus remove_row" style="font-size:26px;margin:5px;"></span></div><div class="row"><div class="col-md-12 sortable" style="min-height:50px;"></div></div></div>');
 					} else if(active_element=='icon'){
@@ -551,7 +596,7 @@ if(isset($_GET['p'])){
 						$('#iconModal').modal('show');
 						$('#design_area')[0].contentWindow.select_active_icon();
 					} else if(active_element=='image'){
-						$(evt.item).replaceWith('<div class="element image"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/blank.gif" class="img-responsive" /></a></div>');
+						$(evt.item).replaceWith('<div class="element image"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/blank.gif" alt="" class="img-responsive" /></a></div>');
 						image_edit();
 						$('#design_area')[0].contentWindow.select_active_element();
 					} else if(active_element=='slider'){
@@ -619,27 +664,25 @@ if(isset($_GET['p'])){
 					} else {
 						$(evt.item).css('box-shadow','');
 					}
-					if($(evt.item).hasClass('text')){
-						$('.editor').css('display','none');
-					}
 				}
 			});
 			sortable_id++;
 		});
 	}
-	function image_edit(){
+	function image_edit(type){
+		image_type = type;
 		$('#imageModal').modal('show');
 		if($('#site_images').html()==''){
 			$.getJSON('<?php echo get_site_url();?>/?do=get_images',function(data){
 				$.each(data,function(i){
-					$('#site_images').append('<div class="select" data-id="'+data[i].id+'" style="width:100px;height:100px;overflow:hidden;float:left;margin:10px;"><img src="'+data[i].thumb+'" height="100" /></div>');
+					$('#site_images').append('<div class="select" data-id="'+data[i].id+'" style="width:100px;height:100px;overflow:hidden;float:left;margin:10px;"><img src="'+data[i].thumb+'" alt="" height="100" /></div>');
 				});
 			});
 		}
 	}
 	function add_new_image(id){
 		$.get("<?php echo get_site_url();?>/?do=get_image&size=thumbnail&id="+id,function(data){
-			$('#site_images').prepend('<div class="select" data-id="'+id+'" style="width:100px;height:100px;overflow:hidden;float:left;margin:10px;"><img src="'+data+'" height="100" /></div>');
+			$('#site_images').prepend('<div class="select" data-id="'+id+'" style="width:100px;height:100px;overflow:hidden;float:left;margin:10px;"><img src="'+data+'" alt="" height="100" /></div>');
 		});
 	}
 	function icon_edit(){
@@ -671,19 +714,26 @@ if(isset($_GET['p'])){
 	<style type="text/css">
 		.picker { margin:0;padding:0;border:0;width:70px;height:20px;border-right:20px solid green;line-height:20px;}
         .left_menu_icon:hover > a > span { color:#00ccff;}
+        .page-header { padding-bottom:9px;margin:40px 0 20px;border-bottom:1px solid #eee;}
+		.fontawesome-icon-list { margin-top:22px;}
+		.fontawesome-icon-list .fa-hover a { overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;color:#222;line-height:32px;height:32px;padding-left:10px;border-radius:4px;}
+		.fontawesome-icon-list .fa-hover a .fa { width:32px;font-size:14px;display:inline-block;text-align:right;margin-right:10px;}
+		.fontawesome-icon-list .fa-hover a:hover { background-color:#1d9d74;color:#fff;text-decoration:none;}
+		.fontawesome-icon-list .fa-hover a:hover .fa { font-size:28px;vertical-align:-6px;}
+		.fontawesome-icon-list .fa-hover a:hover .text-muted { color:#bbe2d5;}
 	</style>
-	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Saira" media="all">
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Montserrat" media="all">
 </head>
-<body style="font-family:'Saira', sans-serif;">
+<body style="font-family:'Montserrat', sans-serif;">
 	<div id="all_content" style="width:100%;height:100%;">
-		<div style="width:80px;height:100%;float:left;background-color:#243343;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;">
-			<div class="open_window left_menu_icon" style="margin-top:20px;margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="#" rel="add" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-plus" style="font-size:26px;margin-bottom:10px;"></span><br /><span>Add</span></a></div>
+		<div style="position:fixed;width:80px;height:100%;float:left;background-color:#243343;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;">
+			<div class="open_window left_menu_icon" style="margin-top:20px;margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="#" id="add" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-plus" style="font-size:26px;margin-bottom:10px;"></span><br /><span>Add</span></a></div>
 			<div id="menu" class="left_menu_icon" style="margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="#" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-bars" style="font-size:26px;margin-bottom:10px;"></span><br /><span>Menu</span></a></div>
 			<div class="left_menu_icon" style="margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="#" data-toggle="modal" data-target="#seoModal" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-search" style="font-size:26px;margin-bottom:10px;"></span><br /><span>SEO</span></a></div>
 			<div id="save" class="left_menu_icon" style="margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="#" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-floppy-o" style="font-size:26px;margin-bottom:10px;"></span><br /><span>Save</span></a></div>
 			<div class="left_menu_icon" style="margin-bottom:20px;text-align:center;padding-top:5px;padding-bottom:5px;"><a href="<?php echo get_site_url();?>/wp-admin" style="color:#677888;font-weight:bold;text-decoration:none;"><span class="fa fa-wordpress" style="font-size:26px;margin-bottom:10px;"></span><br /><span>Admin</span></a></div>
 		</div>
-		<div id="iframe" style="position:fixed;left:80px;overflow:auto;float:left;">
+		<div id="iframe" style="position:fixed;left:80px;float:left;height:100%;">
 			<iframe id="design_area" style="width:100%;height:100%;border:0;" src="<?php echo get_site_url();?>/?p=<?php echo $id;?>&editor" onload="load_add_section_drag()"></iframe>
 		</div>
 		<div id="settings_menu" style="width:300px;height:100%;position:fixed;float:left;background-color:#243343;padding:10px;display:none;">
@@ -694,18 +744,18 @@ if(isset($_GET['p'])){
 						<h3 class="panel-title" style="color:#677888;">Margin</h3>
 					</div>
 					<div class="panel-body">
-		    			<table width="100%" style="color:#677888;font-size:14px;">
+		    			<table style="width:100%;color:#677888;font-size:14px;">
 							<tr>
-								<td>Top space:</td><td align="right"><a href="#" class="set_margin" rel="top_minus"><span class="fa fa-minus"></span></a> <input type="text" id="top_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="top_plus"><span class="fa fa-plus"></span></a></td>
+								<td>Top space:</td><td style="text-align:right;"><a href="#" class="set_margin" data-type="top_minus"><span class="fa fa-minus"></span></a> <input type="text" id="top_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" data-type="top_plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 							<tr>
-								<td>Bottom space:</td><td align="right"><a href="#" class="set_margin" rel="bottom_minus"><span class="fa fa-minus"></span></a> <input type="text" id="bottom_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="bottom_plus"><span class="fa fa-plus"></span></a></td>
+								<td>Bottom space:</td><td style="text-align:right;"><a href="#" class="set_margin" data-type="bottom_minus"><span class="fa fa-minus"></span></a> <input type="text" id="bottom_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" data-type="bottom_plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 							<tr>
-								<td>Left space:</td><td align="right"><a href="#" class="set_margin" rel="left_minus"><span class="fa fa-minus"></span></a> <input type="text" id="left_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="left_plus"><span class="fa fa-plus"></span></a></td>
+								<td>Left space:</td><td style="text-align:right;"><a href="#" class="set_margin" data-type="left_minus"><span class="fa fa-minus"></span></a> <input type="text" id="left_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" data-type="left_plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 							<tr>
-								<td>Right space:</td><td align="right"><a href="#" class="set_margin" rel="right_minus"><span class="fa fa-minus"></span></a> <input type="text" id="right_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" rel="right_plus"><span class="fa fa-plus"></span></a></td>
+								<td>Right space:</td><td style="text-align:right;"><a href="#" class="set_margin" data-type="right_minus"><span class="fa fa-minus"></span></a> <input type="text" id="right_margin" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_margin" data-type="right_plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 						</table>
 					</div>
@@ -717,15 +767,26 @@ if(isset($_GET['p'])){
 						<h3 class="panel-title" style="color:#677888;">Style</h3>
 					</div>
 					<div class="panel-body">
-						<table width="100%" style="color:#677888;font-size:14px;">
+						<table style="width:100%;color:#677888;font-size:14px;">
 							<tr>
-								<td>Background color:</td><td align="right"># <input type="text" class="picker" data-type="grid_background"></input></td>
+								<td>Background color:</td><td style="text-align:right;"># <input type="text" class="picker" data-type="grid_background"></td>
 							</tr>
 							<tr>
-								<td>Opacity:</td><td align="right"><a href="#" class="set_grid_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="grid_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_grid_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
+								<td>Opacity:</td><td style="text-align:right;"><a href="#" class="set_grid_opacity" data-type="minus"><span class="fa fa-minus"></span></a> <input type="text" id="grid_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_grid_opacity" data-type="plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 						</table>
 						<br /><a href="#" class="remove_grid_background" style="color:#cc0000;">Delete background</a>
+					</div>
+				</div>
+			</div>
+			<div id="gallery_settings" style="display:none;">
+				<div class="panel panel-default" style="border-radius:0;margin-top:10px;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Content</h3>
+					</div>
+					<div class="panel-body">
+						<button class="btn btn-default btn-block image_edit" type="button">Add image</button>
+					    <div id="gallery_content" style="margin-top:10px;font-weight:bold;font-size:14px;"></div>
 					</div>
 				</div>
 			</div>
@@ -736,16 +797,16 @@ if(isset($_GET['p'])){
 						<h3 class="panel-title" style="color:#677888;">Column</h3>
 					</div>
 					<div class="panel-body" style="padding-left:5px;padding-right:5px;">
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_01.png" class="set_column" rel="1" style="margin:4px;border:1px solid #666;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_02.png" class="set_column" rel="2" style="margin:4px;border:1px solid #EEE;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_03.png" class="set_column" rel="3" style="margin:4px;border:1px solid #EEE;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_04.png" class="set_column" rel="4" style="margin:4px;border:1px solid #EEE;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_10.png" class="set_column" rel="10" style="margin:4px;border:1px solid #EEE;" /><br />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_05.png" class="set_column" rel="5" style="margin:4px;border:1px solid #EEE;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_06.png" class="set_column" rel="6" style="margin:4px;border:1px solid #EEE;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_07.png" class="set_column" rel="7" style="margin:4px;border:1px solid #EEE;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_08.png" class="set_column" rel="8" style="margin:4px;border:1px solid #EEE;" />
-						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_09.png" class="set_column" rel="9" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_01.png" alt="" class="set_column" data-type="1" style="margin:4px;border:1px solid #666;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_02.png" alt="" class="set_column" data-type="2" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_03.png" alt="" class="set_column" data-type="3" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_04.png" alt="" class="set_column" data-type="4" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_10.png" alt="" class="set_column" data-type="10" style="margin:4px;border:1px solid #EEE;" /><br />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_05.png" alt="" class="set_column" data-type="5" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_06.png" alt="" class="set_column" data-type="6" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_07.png" alt="" class="set_column" data-type="7" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_08.png" alt="" class="set_column" data-type="8" style="margin:4px;border:1px solid #EEE;" />
+						<img src="<?php echo get_stylesheet_directory_uri();?>/assets/img/column_09.png" alt="" class="set_column" data-type="9" style="margin:4px;border:1px solid #EEE;" />
 						<div id="customize_layout" style="color:#677888;font-size:14px;margin-top:10px;text-align:center;"></div>
 					</div>
 				</div>
@@ -756,17 +817,66 @@ if(isset($_GET['p'])){
 						<h3 class="panel-title" style="color:#677888;">Style</h3>
 					</div>
 					<div class="panel-body">
-						<table width="100%" style="color:#677888;font-size:14px;">
+						<table style="width:100%;color:#677888;font-size:14px;">
 							<tr>
-								<td>Align:</td><td align="right"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
+								<td>Align:</td><td style="text-align:right;"><a href="#" class="set_align" data-type="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" data-type="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" data-type="right"><span class="fa fa-align-right"></span></a></td>
+							</tr>
+							<tr id="icon_color">
+								<td>Color:</td><td style="text-align:right;"># <input type="text" class="picker" data-type="icon"></td>
+							</tr>
+							<tr id="icon_background_color">
+								<td>Background color:</td><td style="text-align:right;"># <input type="text" class="picker" data-type="icon_background"></td>
 							</tr>
 							<tr>
-								<td>Color:</td><td align="right"># <input type="text" class="picker" data-type="icon"></input></td>
-							</tr>
-							<tr>
-								<td>Size:</td><td align="right"><a href="#" class="set_icon_size" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="icon_size" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_icon_size" rel="plus"><span class="fa fa-plus"></span></a></td>
+								<td>Size:</td><td style="text-align:right;"><a href="#" class="set_icon_size" data-type="minus"><span class="fa fa-minus"></span></a> <input type="text" id="icon_size" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_icon_size" data-type="plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 						</table>
+					</div>
+				</div>
+			</div>
+			<div id="social_icons_settings" style="display:none;">
+				<div class="panel panel-default" style="border-radius:0;margin-bottom:10px;">
+					<div class="panel-heading">
+						<h3 class="panel-title" style="color:#677888;">Content</h3>
+					</div>
+					<div class="panel-body">
+						<div class="input-group" style="margin-top:10px;">
+							<select class="form-control" id="social_icon">
+								<option value="0">Select icon</option>
+								<option value="behance">Behance</option>
+								<option value="dribbble" data-color="ea4c8d">Dribbble</option>
+								<option value="at">Email</option>
+								<option value="facebook" data-color="3b5998">Facebook</option>
+								<option value="flickr" data-color="ff0084">Flickr</option>
+								<option value="foursquare">Foursquare</option>
+								<option value="github">Github</option>
+								<option value="google-plus" data-color="dd4b39">Google+</option>
+								<option value="instagram" data-color="517fa4">Instagram</option>
+								<option value="linkedin" data-color="007bb6">Linkedin</option>
+								<option value="medium">Medium</option>
+								<option value="pinterest" data-color="cb2027">Pinterest</option>
+								<option value="rss" data-color="ff8a3c">RSS</option>
+								<option value="skype" data-color="12a5f4">Skype</option>
+								<option value="snapchat">Snapchat</option>
+								<option value="soundcloud">Soundcloud</option>
+								<option value="spotify">Spotify</option>
+								<option value="steam">Steam</option>
+								<option value="tumblr" data-color="32506d">Tumblr</option>
+								<option value="twitch">Twitch</option>
+								<option value="twitter" data-color="00aced">Twitter</option>
+								<option value="vimeo" data-color="45bbff">Vimeo</option>
+								<option value="vine">Vine</option>
+								<option value="vk">Vk</option>
+								<option value="link">Website</option>
+								<option value="whatsapp">Whatsapp</option>
+								<option value="wordpress">Wordpress</option>
+								<option value="youtube" data-color="a82400">Youtube</option>
+							</select>
+							<span class="input-group-btn">
+								<button class="btn btn-default add_icon" type="button">Add</button>
+							</span>
+					    </div>
+					    <div id="sortable_social_icons" style="margin-top:10px;font-weight:bold;font-size:14px;"></div>
 					</div>
 				</div>
 			</div>
@@ -776,18 +886,18 @@ if(isset($_GET['p'])){
 						<h3 class="panel-title" style="color:#677888;">Style</h3>
 					</div>
 					<div class="panel-body">
-						<table width="100%" style="color:#677888;font-size:14px;">
+						<table style="width:100%;color:#677888;font-size:14px;">
 							<tr>
-								<td>Align:</td><td align="right"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
+								<td>Align:</td><td style="text-align:right;"><a href="#" class="set_align" data-type="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" data-type="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" data-type="right"><span class="fa fa-align-right"></span></a></td>
 							</tr>
 							<tr>
-								<td>Shape:</td><td align="right"><a href="#" class="set_shape" rel="circle"><span class="fa fa-circle" style="font-size:26px;"></span></a> <a href="#" class="set_shape" rel="square"><span class="fa fa-square" style="font-size:26px;"></span></a></td>
+								<td>Shape:</td><td style="text-align:right;"><a href="#" class="set_shape" data-type="circle"><span class="fa fa-circle" style="font-size:26px;"></span></a> <a href="#" class="set_shape" data-type="square"><span class="fa fa-square" style="font-size:26px;"></span></a></td>
 							</tr>
 							<tr>
-								<td>Border:</td><td align="right"><a href="#" class="set_image_border" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="image_border" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_image_border" rel="plus"><span class="fa fa-plus"></span></a></td>
+								<td>Border:</td><td style="text-align:right;"><a href="#" class="set_image_border" data-type="minus"><span class="fa fa-minus"></span></a> <input type="text" id="image_border" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_image_border" data-type="plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 							<tr>
-								<td>Border color:</td><td align="right"># <input type="text" class="picker" data-type="image_border"></input></td>
+								<td>Border color:</td><td style="text-align:right;"># <input type="text" class="picker" data-type="image_border"></td>
 							</tr>
 						</table>
 					</div>
@@ -819,9 +929,9 @@ if(isset($_GET['p'])){
 						<h3 class="panel-title" style="color:#677888;">Style</h3>
 					</div>
 					<div class="panel-body">
-						<table width="100%" style="color:#677888;font-size:14px;">
+						<table style="width:100%;color:#677888;font-size:14px;">
 							<tr>
-								<td>Height:</td><td align="right"><a href="#" class="set_slider_height" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="slider_height" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_slider_height" rel="plus"><span class="fa fa-plus"></span></a></td>
+								<td>Height:</td><td style="text-align:right;"><a href="#" class="set_slider_height" data-type="minus"><span class="fa fa-minus"></span></a> <input type="text" id="slider_height" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_slider_height" data-type="plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 						</table>
 					</div>
@@ -848,19 +958,119 @@ if(isset($_GET['p'])){
 						<h3 class="panel-title" style="color:#677888;">Style</h3>
 					</div>
 					<div class="panel-body">
-				    	<table width="100%" style="color:#677888;font-size:14px;">
+				    	<table style="width:100%;color:#677888;font-size:14px;">
 				    		<tr>
-								<td>Align:</td><td align="right"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
+								<td>Align:</td><td style="text-align:right;"><a href="#" class="set_align" data-type="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" data-type="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" data-type="right"><span class="fa fa-align-right"></span></a></td>
 							</tr>
 				    		<tr>
-								<td>Background color:</td><td align="right"># <input type="text" class="picker" data-type="button_background"></input></td>
+								<td>Background color:</td><td style="text-align:right;"># <input type="text" class="picker" data-type="button_background"></td>
 							</tr>
 							<tr>
-								<td>Opacity:</td><td align="right"><a href="#" class="set_button_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="button_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_button_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
+								<td>Opacity:</td><td style="text-align:right;"><a href="#" class="set_button_opacity" data-type="minus"><span class="fa fa-minus"></span></a> <input type="text" id="button_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_button_opacity" data-type="plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 						</table>
 						<select class="form-control" id="button_change_font" style="width:50%;float:left;">
 							<option value="0">Select font</option>
+							<option value="Abril Fatface,cursive">Abril Fatface</option>
+							<option value="Alegreya,serif">Alegreya</option>
+							<option value="Alfa Slab One,cursive">Alfa Slab One</option>
+							<option value="Amatic SC,cursive">Amatic SC</option>
+							<option value="Amiri,serif">Amiri</option>
+							<option value="Anton,sans-serif">Anton</option>
+							<option value="Arimo,sans-serif">Arimo</option>
+							<option value="Audiowide,cursive">Audiowide</option>
+							<option value="Bangers,cursive">Bangers</option>
+							<option value="Berkshire Swash,cursive">Berkshire Swash</option>
+							<option value="Bevan,cursive">Bevan</option>
+							<option value="Bitter,serif">Bitter</option>
+							<option value="Bree Serif,serif">Bree Serif</option>
+							<option value="Cabin,sans-serif">Cabin</option>
+							<option value="Cardo,serif">Cardo</option>
+							<option value="Catamaran,sans-serif">Catamaran</option>
+							<option value="Caveat Brush,cursive">Caveat Brush</option>
+							<option value="Caveat,cursive">Caveat</option>
+							<option value="Cinzel,serif">Cinzel</option>
+							<option value="Coda,cursive">Coda</option>
+							<option value="Comfortaa,cursive">Comfortaa</option>
+							<option value="Concert One,cursive">Concert One</option>
+							<option value="Cormorant Garamond,serif">Cormorant Garamond</option>
+							<option value="Courgette,cursive">Courgette</option>
+							<option value="Crete Round,serif">Crete Round</option>
+							<option value="Dancing Script,cursive">Dancing Script</option>
+							<option value="Domine,serif">Domine</option>
+							<option value="Dosis,sans-serif">Dosis</option>
+							<option value="EB Garamond,serif">EB Garamond</option>
+							<option value="Exo 2,sans-serif">Exo 2</option>
+							<option value="Fira Sans,sans-serif">Fira Sans</option>
+							<option value="Fjalla One,sans-serif">Fjalla One</option>
+							<option value="Forum,cursive">Forum</option>
+							<option value="Glegoo,serif">Glegoo</option>
+							<option value="Great Vibes,cursive">Great Vibes</option>
+							<option value="Hind,sans-serif">Hind</option>
+							<option value="Inconsolata,monospace">Inconsolata</option>
+							<option value="Josefin Sans,sans-serif">Josefin Sans</option>
+							<option value="Kalam,cursive">Kalam</option>
+							<option value="Kaushan Script,cursive">Kaushan Script</option>
+							<option value="Lato,sans-serif">Lato</option>
+							<option value="Libre Baskerville,serif">Libre Baskerville</option>
+							<option value="Lobster,cursive">Lobster</option>
+							<option value="Lora,serif">Lora</option>
+							<option value="Marck Script,cursive">Marck Script</option>
+							<option value="Merienda,cursive">Merienda</option>
+							<option value="Merriweather,serif">Merriweather</option>
+							<option value="Montserrat,sans-serif">Montserrat</option>
+							<option value="Muli,sans-serif">Muli</option>
+							<option value="Neuton,serif">Neuton</option>
+							<option value="Noticia Text,serif">Noticia Text</option>
+							<option value="Noto Sans,sans-serif">Noto Sans</option>
+							<option value="Noto Serif,serif">Noto Serif</option>
+							<option value="Nunito,sans-serif">Nunito</option>
+							<option value="Old Standard TT,serif">Old Standard TT</option>
+							<option value="Oleo Script,cursive">Oleo Script</option>
+							<option value="Open Sans Condensed,sans-serif">Open Sans Condensed</option>
+							<option value="Open Sans,sans-serif">Open Sans</option>
+							<option value="Oswald,sans-serif">Oswald</option>
+							<option value="Overlock,cursive">Overlock</option>
+							<option value="Oxygen,sans-serif">Oxygen</option>
+							<option value="Pacifico,cursive">Pacifico</option>
+							<option value="Passion One,cursive">Passion One</option>
+							<option value="Patrick Hand,cursive">Patrick Hand</option>
+							<option value="Playball,cursive">Playball</option>
+							<option value="Playfair Display SC,serif">Playfair Display SC</option>
+							<option value="Playfair Display,serif">Playfair Display</option>
+							<option value="Poiret One,cursive">Poiret One</option>
+							<option value="Poppins,sans-serif">Poppins</option>
+							<option value="Press Start 2P,cursive">Press Start 2P</option>
+							<option value="PT Mono,monospace">PT Mono</option>
+							<option value="PT Sans Narrow,sans-serif">PT Sans Narrow</option>
+							<option value="PT Sans,sans-serif">PT Sans</option>
+							<option value="PT Serif,serif">PT Serif</option>
+							<option value="Quattrocento,serif">Quattrocento</option>
+							<option value="Quicksand,sans-serif">Quicksand</option>
+							<option value="Raleway,sans-serif">Raleway</option>
+							<option value="Righteous,cursive">Righteous</option>
+							<option value="Roboto Condensed,sans-serif">Roboto Condensed</option>
+							<option value="Roboto Mono,monospace">Roboto Mono</option>
+							<option value="Roboto Slab,serif">Roboto Slab</option>
+							<option value="Roboto,sans-serif">Roboto</option>
+							<option value="Rokkitt,serif">Rokkitt</option>
+							<option value="Sacramento,cursive">Sacramento</option>
+							<option value="Sanchez,serif">Sanchez</option>
+							<option value="Shadows Into Light Two,cursive">Shadows Into Light Two</option>
+							<option value="Shrikhand,cursive">Shrikhand</option>
+							<option value="Sigmar One,cursive">Sigmar One</option>
+							<option value="Slabo 27px,serif">Slabo 27px</option>
+							<option value="Sorts Mill Goudy,serif">Sorts Mill Goudy</option>
+							<option value="Source Code Pro,monospace">Source Code Pro</option>
+							<option value="Source Sans Pro,sans-serif">Source Sans Pro</option>
+							<option value="Source Serif Pro,serif">Source Serif Pro</option>
+							<option value="Tinos,serif">Tinos</option>
+							<option value="Titillium Web,sans-serif">Titillium Web</option>
+							<option value="Ubuntu,sans-serif">Ubuntu</option>
+							<option value="Unica One,cursive">Unica One</option>
+							<option value="Vollkorn,serif">Vollkorn</option>
+							<option value="VT323,monospace">VT323</option>
+							<option value="Work Sans,sans-serif">Work Sans</option>
 						</select>
 						<select class="form-control" id="button_change_size" style="width:50%;">
 							<option value="0">Size</option>
@@ -881,15 +1091,15 @@ if(isset($_GET['p'])){
 							<option value="48">48</option>
 							<option value="72">72</option>
 						</select>
-						<table width="100%" style="color:#677888;font-size:14px;">
+						<table style="width:100%;color:#677888;font-size:14px;">
 							<tr>
-								<td>Font color:</td><td align="right"># <input type="text" class="picker" data-type="button_font"></input></td>
+								<td>Font color:</td><td style="text-align:right;"># <input type="text" class="picker" data-type="button_font"></td>
 							</tr>
 							<tr>
-								<td>Border:</td><td align="right"><a href="#" class="set_button_border" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="button_border" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_button_border" rel="plus"><span class="fa fa-plus"></span></a></td>
+								<td>Border:</td><td style="text-align:right;"><a href="#" class="set_button_border" data-type="minus"><span class="fa fa-minus"></span></a> <input type="text" id="button_border" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_button_border" data-type="plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 							<tr>
-								<td>Border color:</td><td align="right"># <input type="text" class="picker" data-type="button_border"></input></td>
+								<td>Border color:</td><td style="text-align:right;"># <input type="text" class="picker" data-type="button_border"></td>
 							</tr>
 						</table>
 					</div>
@@ -902,13 +1112,113 @@ if(isset($_GET['p'])){
 						<h3 class="panel-title" style="color:#677888;">Style</h3>
 					</div>
 					<div class="panel-body">
-				    	<table width="100%" style="color:#677888;font-size:14px;">
+				    	<table style="width:100%;color:#677888;font-size:14px;">
 				    		<tr>
-								<td>Align:</td><td align="right"><a href="#" class="set_align" rel="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" rel="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" rel="right"><span class="fa fa-align-right"></span></a></td>
+								<td>Align:</td><td style="text-align:right;"><a href="#" class="set_align" data-type="left"><span class="fa fa-align-left"></span></a> <a href="#" class="set_align" data-type="center"><span class="fa fa-align-center"></span></a> <a href="#" class="set_align" data-type="right"><span class="fa fa-align-right"></span></a></td>
 							</tr>
 						</table>
 						<select class="form-control" id="text_change_font" style="width:50%;float:left;">
 							<option value="0">Select font</option>
+							<option value="Abril Fatface,cursive">Abril Fatface</option>
+							<option value="Alegreya,serif">Alegreya</option>
+							<option value="Alfa Slab One,cursive">Alfa Slab One</option>
+							<option value="Amatic SC,cursive">Amatic SC</option>
+							<option value="Amiri,serif">Amiri</option>
+							<option value="Anton,sans-serif">Anton</option>
+							<option value="Arimo,sans-serif">Arimo</option>
+							<option value="Audiowide,cursive">Audiowide</option>
+							<option value="Bangers,cursive">Bangers</option>
+							<option value="Berkshire Swash,cursive">Berkshire Swash</option>
+							<option value="Bevan,cursive">Bevan</option>
+							<option value="Bitter,serif">Bitter</option>
+							<option value="Bree Serif,serif">Bree Serif</option>
+							<option value="Cabin,sans-serif">Cabin</option>
+							<option value="Cardo,serif">Cardo</option>
+							<option value="Catamaran,sans-serif">Catamaran</option>
+							<option value="Caveat Brush,cursive">Caveat Brush</option>
+							<option value="Caveat,cursive">Caveat</option>
+							<option value="Cinzel,serif">Cinzel</option>
+							<option value="Coda,cursive">Coda</option>
+							<option value="Comfortaa,cursive">Comfortaa</option>
+							<option value="Concert One,cursive">Concert One</option>
+							<option value="Cormorant Garamond,serif">Cormorant Garamond</option>
+							<option value="Courgette,cursive">Courgette</option>
+							<option value="Crete Round,serif">Crete Round</option>
+							<option value="Dancing Script,cursive">Dancing Script</option>
+							<option value="Domine,serif">Domine</option>
+							<option value="Dosis,sans-serif">Dosis</option>
+							<option value="EB Garamond,serif">EB Garamond</option>
+							<option value="Exo 2,sans-serif">Exo 2</option>
+							<option value="Fira Sans,sans-serif">Fira Sans</option>
+							<option value="Fjalla One,sans-serif">Fjalla One</option>
+							<option value="Forum,cursive">Forum</option>
+							<option value="Glegoo,serif">Glegoo</option>
+							<option value="Great Vibes,cursive">Great Vibes</option>
+							<option value="Hind,sans-serif">Hind</option>
+							<option value="Inconsolata,monospace">Inconsolata</option>
+							<option value="Josefin Sans,sans-serif">Josefin Sans</option>
+							<option value="Kalam,cursive">Kalam</option>
+							<option value="Kaushan Script,cursive">Kaushan Script</option>
+							<option value="Lato,sans-serif">Lato</option>
+							<option value="Libre Baskerville,serif">Libre Baskerville</option>
+							<option value="Lobster,cursive">Lobster</option>
+							<option value="Lora,serif">Lora</option>
+							<option value="Marck Script,cursive">Marck Script</option>
+							<option value="Merienda,cursive">Merienda</option>
+							<option value="Merriweather,serif">Merriweather</option>
+							<option value="Montserrat,sans-serif">Montserrat</option>
+							<option value="Muli,sans-serif">Muli</option>
+							<option value="Neuton,serif">Neuton</option>
+							<option value="Noticia Text,serif">Noticia Text</option>
+							<option value="Noto Sans,sans-serif">Noto Sans</option>
+							<option value="Noto Serif,serif">Noto Serif</option>
+							<option value="Nunito,sans-serif">Nunito</option>
+							<option value="Old Standard TT,serif">Old Standard TT</option>
+							<option value="Oleo Script,cursive">Oleo Script</option>
+							<option value="Open Sans Condensed,sans-serif">Open Sans Condensed</option>
+							<option value="Open Sans,sans-serif">Open Sans</option>
+							<option value="Oswald,sans-serif">Oswald</option>
+							<option value="Overlock,cursive">Overlock</option>
+							<option value="Oxygen,sans-serif">Oxygen</option>
+							<option value="Pacifico,cursive">Pacifico</option>
+							<option value="Passion One,cursive">Passion One</option>
+							<option value="Patrick Hand,cursive">Patrick Hand</option>
+							<option value="Playball,cursive">Playball</option>
+							<option value="Playfair Display SC,serif">Playfair Display SC</option>
+							<option value="Playfair Display,serif">Playfair Display</option>
+							<option value="Poiret One,cursive">Poiret One</option>
+							<option value="Poppins,sans-serif">Poppins</option>
+							<option value="Press Start 2P,cursive">Press Start 2P</option>
+							<option value="PT Mono,monospace">PT Mono</option>
+							<option value="PT Sans Narrow,sans-serif">PT Sans Narrow</option>
+							<option value="PT Sans,sans-serif">PT Sans</option>
+							<option value="PT Serif,serif">PT Serif</option>
+							<option value="Quattrocento,serif">Quattrocento</option>
+							<option value="Quicksand,sans-serif">Quicksand</option>
+							<option value="Raleway,sans-serif">Raleway</option>
+							<option value="Righteous,cursive">Righteous</option>
+							<option value="Roboto Condensed,sans-serif">Roboto Condensed</option>
+							<option value="Roboto Mono,monospace">Roboto Mono</option>
+							<option value="Roboto Slab,serif">Roboto Slab</option>
+							<option value="Roboto,sans-serif">Roboto</option>
+							<option value="Rokkitt,serif">Rokkitt</option>
+							<option value="Sacramento,cursive">Sacramento</option>
+							<option value="Sanchez,serif">Sanchez</option>
+							<option value="Shadows Into Light Two,cursive">Shadows Into Light Two</option>
+							<option value="Shrikhand,cursive">Shrikhand</option>
+							<option value="Sigmar One,cursive">Sigmar One</option>
+							<option value="Slabo 27px,serif">Slabo 27px</option>
+							<option value="Sorts Mill Goudy,serif">Sorts Mill Goudy</option>
+							<option value="Source Code Pro,monospace">Source Code Pro</option>
+							<option value="Source Sans Pro,sans-serif">Source Sans Pro</option>
+							<option value="Source Serif Pro,serif">Source Serif Pro</option>
+							<option value="Tinos,serif">Tinos</option>
+							<option value="Titillium Web,sans-serif">Titillium Web</option>
+							<option value="Ubuntu,sans-serif">Ubuntu</option>
+							<option value="Unica One,cursive">Unica One</option>
+							<option value="Vollkorn,serif">Vollkorn</option>
+							<option value="VT323,monospace">VT323</option>
+							<option value="Work Sans,sans-serif">Work Sans</option>
 						</select>
 						<select class="form-control" id="text_change_size" style="width:50%;">
 							<option value="0">Size</option>
@@ -929,9 +1239,9 @@ if(isset($_GET['p'])){
 							<option value="48">48</option>
 							<option value="72">72</option>
 						</select>
-						<table width="100%" style="color:#677888;font-size:14px;">
+						<table style="width:100%;color:#677888;font-size:14px;">
 							<tr>
-								<td>Font color:</td><td align="right"># <input type="text" class="picker" data-type="text_font"></input></td>
+								<td>Font color:</td><td style="text-align:right;"># <input type="text" class="picker" data-type="text_font"></td>
 							</tr>
 						</table>
 					</div>
@@ -945,22 +1255,122 @@ if(isset($_GET['p'])){
 					</div>
 					<div class="panel-body">
 						<a href="#" class="image_edit" style="color:#cc0000;">Select logo</a>
-						<table width="100%" style="margin-top:15px;margin-bottom:15px;color:#677888;font-size:14px;">
+						<table style="width:100%;margin-top:15px;margin-bottom:15px;color:#677888;font-size:14px;">
 							<tr>
 								<td>Background color:</td>
-								<td align="right"># <input type="text" class="picker" data-type="menu_background"></input></td>
+								<td style="text-align:right;"># <input type="text" class="picker" data-type="menu_background"></td>
 							</tr>
 							<tr>
-								<td>Opacity:</td><td align="right"><a href="#" class="set_menu_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="menu_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_menu_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
+								<td>Opacity:</td><td style="text-align:right;"><a href="#" class="set_menu_opacity" data-type="minus"><span class="fa fa-minus"></span></a> <input type="text" id="menu_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_menu_opacity" data-type="plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 						</table>
 						<select class="form-control" id="menu_change_font">
 							<option value="0">Select font</option>
+							<option value="Abril Fatface,cursive">Abril Fatface</option>
+							<option value="Alegreya,serif">Alegreya</option>
+							<option value="Alfa Slab One,cursive">Alfa Slab One</option>
+							<option value="Amatic SC,cursive">Amatic SC</option>
+							<option value="Amiri,serif">Amiri</option>
+							<option value="Anton,sans-serif">Anton</option>
+							<option value="Arimo,sans-serif">Arimo</option>
+							<option value="Audiowide,cursive">Audiowide</option>
+							<option value="Bangers,cursive">Bangers</option>
+							<option value="Berkshire Swash,cursive">Berkshire Swash</option>
+							<option value="Bevan,cursive">Bevan</option>
+							<option value="Bitter,serif">Bitter</option>
+							<option value="Bree Serif,serif">Bree Serif</option>
+							<option value="Cabin,sans-serif">Cabin</option>
+							<option value="Cardo,serif">Cardo</option>
+							<option value="Catamaran,sans-serif">Catamaran</option>
+							<option value="Caveat Brush,cursive">Caveat Brush</option>
+							<option value="Caveat,cursive">Caveat</option>
+							<option value="Cinzel,serif">Cinzel</option>
+							<option value="Coda,cursive">Coda</option>
+							<option value="Comfortaa,cursive">Comfortaa</option>
+							<option value="Concert One,cursive">Concert One</option>
+							<option value="Cormorant Garamond,serif">Cormorant Garamond</option>
+							<option value="Courgette,cursive">Courgette</option>
+							<option value="Crete Round,serif">Crete Round</option>
+							<option value="Dancing Script,cursive">Dancing Script</option>
+							<option value="Domine,serif">Domine</option>
+							<option value="Dosis,sans-serif">Dosis</option>
+							<option value="EB Garamond,serif">EB Garamond</option>
+							<option value="Exo 2,sans-serif">Exo 2</option>
+							<option value="Fira Sans,sans-serif">Fira Sans</option>
+							<option value="Fjalla One,sans-serif">Fjalla One</option>
+							<option value="Forum,cursive">Forum</option>
+							<option value="Glegoo,serif">Glegoo</option>
+							<option value="Great Vibes,cursive">Great Vibes</option>
+							<option value="Hind,sans-serif">Hind</option>
+							<option value="Inconsolata,monospace">Inconsolata</option>
+							<option value="Josefin Sans,sans-serif">Josefin Sans</option>
+							<option value="Kalam,cursive">Kalam</option>
+							<option value="Kaushan Script,cursive">Kaushan Script</option>
+							<option value="Lato,sans-serif">Lato</option>
+							<option value="Libre Baskerville,serif">Libre Baskerville</option>
+							<option value="Lobster,cursive">Lobster</option>
+							<option value="Lora,serif">Lora</option>
+							<option value="Marck Script,cursive">Marck Script</option>
+							<option value="Merienda,cursive">Merienda</option>
+							<option value="Merriweather,serif">Merriweather</option>
+							<option value="Montserrat,sans-serif">Montserrat</option>
+							<option value="Muli,sans-serif">Muli</option>
+							<option value="Neuton,serif">Neuton</option>
+							<option value="Noticia Text,serif">Noticia Text</option>
+							<option value="Noto Sans,sans-serif">Noto Sans</option>
+							<option value="Noto Serif,serif">Noto Serif</option>
+							<option value="Nunito,sans-serif">Nunito</option>
+							<option value="Old Standard TT,serif">Old Standard TT</option>
+							<option value="Oleo Script,cursive">Oleo Script</option>
+							<option value="Open Sans Condensed,sans-serif">Open Sans Condensed</option>
+							<option value="Open Sans,sans-serif">Open Sans</option>
+							<option value="Oswald,sans-serif">Oswald</option>
+							<option value="Overlock,cursive">Overlock</option>
+							<option value="Oxygen,sans-serif">Oxygen</option>
+							<option value="Pacifico,cursive">Pacifico</option>
+							<option value="Passion One,cursive">Passion One</option>
+							<option value="Patrick Hand,cursive">Patrick Hand</option>
+							<option value="Playball,cursive">Playball</option>
+							<option value="Playfair Display SC,serif">Playfair Display SC</option>
+							<option value="Playfair Display,serif">Playfair Display</option>
+							<option value="Poiret One,cursive">Poiret One</option>
+							<option value="Poppins,sans-serif">Poppins</option>
+							<option value="Press Start 2P,cursive">Press Start 2P</option>
+							<option value="PT Mono,monospace">PT Mono</option>
+							<option value="PT Sans Narrow,sans-serif">PT Sans Narrow</option>
+							<option value="PT Sans,sans-serif">PT Sans</option>
+							<option value="PT Serif,serif">PT Serif</option>
+							<option value="Quattrocento,serif">Quattrocento</option>
+							<option value="Quicksand,sans-serif">Quicksand</option>
+							<option value="Raleway,sans-serif">Raleway</option>
+							<option value="Righteous,cursive">Righteous</option>
+							<option value="Roboto Condensed,sans-serif">Roboto Condensed</option>
+							<option value="Roboto Mono,monospace">Roboto Mono</option>
+							<option value="Roboto Slab,serif">Roboto Slab</option>
+							<option value="Roboto,sans-serif">Roboto</option>
+							<option value="Rokkitt,serif">Rokkitt</option>
+							<option value="Sacramento,cursive">Sacramento</option>
+							<option value="Sanchez,serif">Sanchez</option>
+							<option value="Shadows Into Light Two,cursive">Shadows Into Light Two</option>
+							<option value="Shrikhand,cursive">Shrikhand</option>
+							<option value="Sigmar One,cursive">Sigmar One</option>
+							<option value="Slabo 27px,serif">Slabo 27px</option>
+							<option value="Sorts Mill Goudy,serif">Sorts Mill Goudy</option>
+							<option value="Source Code Pro,monospace">Source Code Pro</option>
+							<option value="Source Sans Pro,sans-serif">Source Sans Pro</option>
+							<option value="Source Serif Pro,serif">Source Serif Pro</option>
+							<option value="Tinos,serif">Tinos</option>
+							<option value="Titillium Web,sans-serif">Titillium Web</option>
+							<option value="Ubuntu,sans-serif">Ubuntu</option>
+							<option value="Unica One,cursive">Unica One</option>
+							<option value="Vollkorn,serif">Vollkorn</option>
+							<option value="VT323,monospace">VT323</option>
+							<option value="Work Sans,sans-serif">Work Sans</option>
 						</select>
-						<table width="100%" style="margin-top:15px;color:#677888;font-size:14px;">
+						<table style="width:100%;margin-top:15px;color:#677888;font-size:14px;">
 							<tr>
 								<td>Font color:</td>
-								<td align="right"># <input type="text" class="picker" data-type="menu_font"></input></td>
+								<td style="text-align:right;"># <input type="text" class="picker" data-type="menu_font"></td>
 							</tr>
 						</table>
 					</div>
@@ -988,13 +1398,13 @@ if(isset($_GET['p'])){
 					</div>
 					<div class="panel-body">
 						<a href="#" class="image_edit" style="color:#cc0000;">Background image</a>
-						<table width="100%" style="margin-top:15px;margin-bottom:15px;color:#677888;font-size:14px;">
+						<table style="width:100%;margin-top:15px;margin-bottom:15px;color:#677888;font-size:14px;">
 							<tr>
 								<td>Background color:</td>
-								<td align="right"># <input type="text" class="picker" data-type="section_background"></input></td>
+								<td style="text-align:right;"># <input type="text" class="picker" data-type="section_background"></td>
 							</tr>
 							<tr>
-								<td>Opacity:</td><td align="right"><a href="#" class="set_section_opacity" rel="minus"><span class="fa fa-minus"></span></a> <input type="text" id="section_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_section_opacity" rel="plus"><span class="fa fa-plus"></span></a></td>
+								<td>Opacity:</td><td style="text-align:right;"><a href="#" class="set_section_opacity" data-type="minus"><span class="fa fa-minus"></span></a> <input type="text" id="section_opacity" size="5" style="text-align:center;" disabled="disabled"> <a href="#" class="set_section_opacity" data-type="plus"><span class="fa fa-plus"></span></a></td>
 							</tr>
 						</table>
 						<a href="#" class="remove_background" style="color:#cc0000;">Delete background</a>
@@ -1025,12 +1435,12 @@ if(isset($_GET['p'])){
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" id="linkModal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog" style="width:400px;">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title" id="myModalLabel">Define link</h4>
+					<h4 class="modal-title">Define link</h4>
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
@@ -1060,7 +1470,7 @@ if(isset($_GET['p'])){
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog" style="width:1000px;">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -1074,7 +1484,7 @@ if(isset($_GET['p'])){
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" id="iconModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" id="iconModal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog" style="width:1000px;">
 			<div class="modal-content">
 				<div class="modal-body" style="height:500px;overflow:scroll;">
@@ -1102,7 +1512,7 @@ if(isset($_GET['p'])){
 		$description = '';
 	}
 	?>
-	<div class="modal fade" id="seoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" id="seoModal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-body">
@@ -1123,15 +1533,18 @@ if(isset($_GET['p'])){
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" id="contentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" id="contentModal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog" style="width:400px;">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title" id="myModalLabel">Content source</h4>
+					<h4 class="modal-title">Content source</h4>
 				</div>
 				<div class="modal-body">
-					<b>Get content from selected categories:</b><br />
+					<select class="form-control" id="content_type">
+						<option value="categories">Get content from selected categories</option>
+						<option value="tags">Get content from selected tags</option>
+					</select>
 					<div id="content_categories">
 					<?php
 					$categories = get_categories();
@@ -1142,8 +1555,7 @@ if(isset($_GET['p'])){
 					}
 					?>
 					</div>
-					<b>Get content from selected tags:</b><br />
-					<div id="content_tags">
+					<div id="content_tags" style="display:none;">
 					<?php
 					$tags = get_tags();
 					foreach($tags as $tag){
@@ -1157,45 +1569,6 @@ if(isset($_GET['p'])){
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="editor" style="width:100%;text-align:center;background-color:rgba(0,204,255,0.8);padding:5px;position:absolute;z-index:1030;display:none;">
-		<div class="btn-group">
-			<button type="button" class="btn btn-default set_bold">
-				<span class="fa fa-bold" style="font-size:20px;"></span>
-			</button>
-			<button type="button" class="btn btn-default set_italic">
-				<span class="fa fa-italic" style="font-size:20px;"></span>
-			</button>
-		</div>
-		<div class="btn-group">
-			<button type="button" class="btn btn-default set_align_left">
-				<span class="fa fa-align-left" style="font-size:20px;"></span>
-			</button>
-			<button type="button" class="btn btn-default set_align_center">
-				<span class="fa fa-align-center" style="font-size:20px;"></span>
-			</button>
-			<button type="button" class="btn btn-default set_align_right">
-				<span class="fa fa-align-right" style="font-size:20px;"></span>
-			</button>
-			<button type="button" class="btn btn-default set_align_justify">
-				<span class="fa fa-align-justify" style="font-size:20px;"></span>
-			</button>
-		</div>
-		<button type="button" class="btn btn-default set_link_settings">
-			<span class="fa fa-link" style="font-size:20px;"></span>
-		</button>
-		<button type="button" class="btn btn-default image_edit">
-			<span class="fa fa-picture-o" style="font-size:20px;"></span>
-		</button>
-		<div class="btn-group">
-			<button type="button" class="btn btn-default set_font_settings">Select font</button>
-			<button type="button" class="btn btn-default set_size_settings">Size</button>
-		</div>
-		<div class="btn-group">
-			<button type="button" class="btn btn-default set_color">Font color</button>
-			<button type="button" class="btn btn-default set_bg_color">Background color</button>
-		</div>
-		<button type="button" class="btn btn-default reset_format">Reset format</button>
 	</div>
 </body>
 </html>

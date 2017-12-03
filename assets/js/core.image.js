@@ -16,7 +16,7 @@ function get_image_settings(){
 function select_active_element(){
 	active_element = $('img[src="'+get_stylesheet_directory_uri+'/assets/img/blank.gif"]').parent().parent();
 }
-function update_image(selected_image,id){
+function update_image(selected_image,id,type){
 	if($(active_element).prop("tagName")=='SECTION'){
 		rgb_value = $(active_element).css('background-color').split(',');
 		if(rgb_value.length==4){
@@ -51,18 +51,19 @@ function update_image(selected_image,id){
 		}
 		img = new Image();
 		img.onload = function(){
-			$(active_element).css('max-width',this.width);
-			$(active_element).css('max-height',this.height);
+			$(active_element).css('max-width',this.width+'px');
+			$(active_element).css('max-height',this.height+'px');
 			image_resizable($(active_element));
 		}
 		img.src = selected_image;
 	} else if($(active_element).hasClass('slider')){
 		add_slider(selected_image);
-	} else if($(active_element).hasClass('text')){
+	}
+	if(type=='text'){
 		img = new Image();
 		img.onload = function(){
-			document.execCommand("insertHTML", false, '<div class="element image image_in_text" style="max-width:'+this.width+'px;max-height:'+this.height+'px;margin:auto;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="'+selected_image+'" class="img-responsive" /></a></div>');
-			image_resizable($(active_element));
+			document.execCommand("insertHTML", false, '<div class="element image image_in_text last_image" style="max-width:'+this.width+'px;max-height:'+this.height+'px;margin:auto;"><div class="element_panel" style="width:100%;text-align:center;cursor:default;display:none;"><span class="fa fa-clone duplicate" style="font-size:26px;margin:5px;"></span><span class="fa fa-trash remove" style="font-size:26px;margin:5px;"></span><span class="fa fa-cog settings" style="font-size:26px;margin:5px;"></span><span class="fa fa-pencil image_edit" style="font-size:26px;margin:5px;"></span><span class="fa fa-link image_link" style="font-size:26px;margin:5px;"></span></div><a href="#"><img src="'+selected_image+'" class="img-responsive" /></a></div>');
+			image_resizable('.last_image');
 		}
 		img.src = selected_image;
 	}
@@ -101,4 +102,5 @@ function image_resizable(resize_element){
 		handles: 'e,s,se'
 	});
 	$(resize_element).removeClass('load_resize');
+	$(resize_element).removeClass('last_image');
 }

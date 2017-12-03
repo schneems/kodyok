@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	$('body').on('click','.form_edit',function(){
 		active_element = $(this).parent().parent();
-		$('#iframe',window.parent.document).css('width',$('#all_content',window.parent.document).width()-380);
+		$('#iframe',window.parent.document).css('width',($('#all_content',window.parent.document).width()-380)+'px');
 		$('#settings_menu',window.parent.document).show();
 		$('#settings_menu > div',window.parent.document).hide();
 		$('#form_edit_settings',window.parent.document).show();
@@ -36,7 +36,7 @@ function add_form(value){
 	} else {
 		if($('.add_form',window.parent.document).html()=='Add'){
 			next_item_id = $(active_element).children('.form_content').children('.form-group').length;
-			$(active_element).children('.form_content').append('<div class="form-group"><input type="text" class="form-control" placeholder="'+$('#input_name',window.parent.document).val()+'"></div>');
+			$(active_element).children('.form_content').append('<div class="form-group"><input type="text" class="form-control" placeholder="'+$('#input_name',window.parent.document).val()+'" style="padding:25px 20px;"></div>');
 			$("#form_inputs",window.parent.document).append('<div id="form_input_'+next_item_id+'" style="border:1px solid #CCC;padding:10px;"><span class="fa fa-sort" style="font-size:18px;margin-right:10px;"></span>'+$('#input_name',window.parent.document).val()+'<span class="fa fa-pencil form_edit_item" style="font-size:18px;margin-left:10px;"></span><span class="fa fa-trash remove_form" style="font-size:18px;margin-left:10px;"></span></div>');
 		} else if($('.add_form',window.parent.document).html()=='Save'){
 			$(active_element).children('.form_content').children('.form-group').eq(value).children('input').attr('placeholder',$('#input_name',window.parent.document).val());
@@ -60,7 +60,7 @@ function add_form(value){
         		$('#form_inputs',window.parent.document).html(form_content_content);
 			},tolerance:'pointer',cursor:'move',axis:'y'
 		});
-		$(active_element).children('.element_panel').css('margin-top',$(active_element).height());
+		$(active_element).children('.element_panel').css('margin-top',$(active_element).css('height'));
 	}
 }
 function content_send_button(){
